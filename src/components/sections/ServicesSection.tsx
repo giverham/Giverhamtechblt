@@ -55,15 +55,16 @@ function TiltCard({ service, index }: { service: Service; index: number }) {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 50, scale: 0.94 }}
+      initial={{ opacity: 0, y: 40, scale: 0.94 }}
       whileInView={{ opacity: 1, y: 0, scale: 1 }}
       viewport={{ once: true, margin: '-40px' }}
-      transition={{ delay: (index % 4) * 0.08, duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
+      transition={{ delay: (index % 5) * 0.07, duration: 0.7, ease: [0.23, 1, 0.32, 1] }}
+      className="h-full flex flex-col"
       style={{ perspective: '800px' }}
     >
       <div
         ref={cardRef}
-        className="relative p-6 rounded-2xl h-full overflow-hidden cursor-default holo-sheen"
+        className="relative p-5 rounded-2xl h-full flex flex-col justify-between overflow-hidden cursor-default holo-sheen"
         style={{
           background: `linear-gradient(145deg, ${g1}, ${g2}, rgba(0,0,0,0.4))`,
           border: `1px solid ${accentColor}20`,
@@ -96,18 +97,20 @@ function TiltCard({ service, index }: { service: Service; index: number }) {
           style={{ borderBottom: `1px solid ${accentColor}50`, borderRight: `1px solid ${accentColor}50` }} />
 
         {/* Content */}
-        <div style={{ transform: 'translateZ(20px)', transformStyle: 'preserve-3d' }}>
-          <div className="w-11 h-11 rounded-xl flex items-center justify-center mb-5"
-            style={{ background: `${accentColor}18`, border: `1px solid ${accentColor}30` }}>
-            <Icon size={20} style={{ color: accentColor }} />
+        <div style={{ transform: 'translateZ(20px)', transformStyle: 'preserve-3d' }} className="flex flex-col h-full justify-between">
+          <div>
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-4"
+              style={{ background: `${accentColor}18`, border: `1px solid ${accentColor}30` }}>
+              <Icon size={19} style={{ color: accentColor }} />
+            </div>
+
+            <h3 className="text-[14px] font-bold text-white mb-2 leading-snug">{service.title}</h3>
+            <p className="text-gray-400 text-[12px] leading-relaxed mb-4">{service.description}</p>
           </div>
 
-          <h3 className="text-[15px] font-bold text-white mb-2 leading-snug">{service.title}</h3>
-          <p className="text-gray-500 text-[13px] leading-relaxed mb-4">{service.description}</p>
-
-          <ul className="space-y-1.5">
+          <ul className="space-y-1.5 mt-auto pt-2">
             {service.features?.slice(0, 3).map((f, i) => (
-              <li key={i} className="flex items-center gap-2 text-[12px] text-gray-500">
+              <li key={i} className="flex items-center gap-2 text-[11px] text-gray-400">
                 <span className="w-1 h-1 rounded-full flex-shrink-0" style={{ background: accentColor }} />
                 {f}
               </li>
@@ -122,7 +125,7 @@ function TiltCard({ service, index }: { service: Service; index: number }) {
           initial={{ width: 0 }}
           whileInView={{ width: '100%' }}
           viewport={{ once: true }}
-          transition={{ delay: (index % 4) * 0.08 + 0.5, duration: 1.2, ease: [0.23, 1, 0.32, 1] }}
+          transition={{ delay: (index % 5) * 0.07 + 0.4, duration: 1.1, ease: [0.23, 1, 0.32, 1] }}
         />
       </div>
     </motion.div>
@@ -138,8 +141,11 @@ export default function ServicesSection() {
     });
   }, []);
 
+  // Display primary services in balanced rows of 5 on desktop screens
+  const displayedServices = services.slice(0, 10);
+
   return (
-    <section id="services" className="relative py-20 overflow-hidden">
+    <section id="services" className="relative mt-4 md:mt-12 py-10 md:py-14 overflow-hidden">
       <div className="absolute inset-0 bg-grid opacity-25" />
       <div className="absolute inset-0 bg-gradient-to-b from-black via-black/97 to-black" />
 
@@ -147,30 +153,23 @@ export default function ServicesSection() {
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[400px] pointer-events-none opacity-5"
         style={{ background: 'radial-gradient(ellipse, #00E5FF, transparent)' }} />
 
-      <div className="relative z-10 max-w-7xl mx-auto px-6">
-        <div className="text-center mb-14">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-6 md:mb-8">
           <motion.div
             initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-            className="section-label mb-6"
+            className="section-label mb-2.5"
           >WHAT WE DO</motion.div>
           <motion.h2
             initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }}
-            className="text-[clamp(2.2rem,5vw,4.5rem)] font-black tracking-tight leading-[0.95]"
+            className="text-[clamp(1.8rem,3.8vw,3.4rem)] font-black tracking-tight leading-[0.98]"
           >
-            <span className="text-white">Services Built for</span>
-            <br />
+            <span className="text-white">Services Built for </span>
             <span className="text-gradient-cyan">Modern Businesses</span>
           </motion.h2>
-          <motion.p
-            initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.2 }}
-            className="mt-5 text-gray-500 max-w-lg mx-auto text-[15px]"
-          >
-            Every service engineered with precision, performance, and purpose — built to scale.
-          </motion.p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {services.map((s, i) => <TiltCard key={s.id} service={s} index={i} />)}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4 md:gap-6 items-stretch">
+          {displayedServices.map((s, i) => <TiltCard key={s.id} service={s} index={i} />)}
         </div>
       </div>
     </section>
