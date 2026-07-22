@@ -4,7 +4,6 @@ import { Zap, Twitter, Instagram, Linkedin, Github, Mail, MessageCircle, ArrowUp
 const footerLinks = {
   Services: ['Website Development', 'Full Stack Development', 'AI Integration', 'E-Commerce', 'Banking Systems', 'SaaS Applications'],
   Company:  ['About Us', 'Blog', 'Projects', 'Testimonials', 'Contact'],
-  Stack:    ['React & TypeScript', 'Node.js & Express', 'Supabase', 'Vercel', 'OpenAI'],
 };
 
 const socials = [
@@ -28,8 +27,8 @@ export default function Footer() {
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-40 pointer-events-none opacity-8"
         style={{ background: 'radial-gradient(ellipse at top, rgba(0,229,255,0.15), transparent)' }} />
 
-      <div className="relative z-10 max-w-7xl mx-auto px-6 pt-24 pb-10">
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-12 mb-20">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 md:pt-14 pb-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 mb-10 lg:mb-12">
 
           {/* Brand */}
           <div className="col-span-2">
@@ -87,32 +86,18 @@ export default function Footer() {
           ))}
         </div>
 
-        {/* Contact strip */}
-        <div className="flex flex-wrap gap-5 mb-12 pb-12"
-          style={{ borderBottom: '1px solid rgba(255,255,255,0.055)' }}>
-          <a href="mailto:hello@giverhamtech.com"
-            className="flex items-center gap-2 text-[13px] text-gray-600 hover:text-cyan-400 transition-colors group">
-            <Mail size={13} className="group-hover:scale-110 transition-transform" />
-            hello@giverhamtech.com
-          </a>
-          <a href="https://wa.me/2348100000000" target="_blank" rel="noreferrer"
-            className="flex items-center gap-2 text-[13px] text-gray-600 hover:text-green-400 transition-colors group">
-            <MessageCircle size={13} className="group-hover:scale-110 transition-transform" />
-            WhatsApp
-          </a>
-        </div>
-
         {/* Bottom bar */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-[12px] text-gray-700">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6"
+          style={{ borderTop: '1px solid rgba(255,255,255,0.055)' }}>
+          <p className="text-[12px] text-gray-400">
             © {new Date().getFullYear()} Giverham Tech. All rights reserved.
           </p>
           <div className="flex gap-5">
             {['Privacy Policy', 'Terms of Service'].map(t => (
-              <a key={t} href="#" className="text-[12px] text-gray-700 hover:text-gray-500 transition-colors">{t}</a>
+              <a key={t} href="#" className="text-[12px] text-gray-400 hover:text-white transition-colors">{t}</a>
             ))}
           </div>
-          <p className="text-[12px] text-gray-700">
+          <p className="text-[12px] text-gray-400">
             Engineered by{' '}
             <span className="font-semibold" style={{ background: 'linear-gradient(90deg, #00E5FF, #00FFD1)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
               Giverham Tech

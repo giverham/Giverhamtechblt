@@ -1,7 +1,7 @@
-import { useEffect, useRef, useMemo } from 'react';
+import { useEffect, useRef, useMemo, useState } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
-import { motion, useInView } from 'framer-motion';
+import { motion, useInView, AnimatePresence } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
 
 /* ── Particles (Memoized Geometry) ───────────── */
@@ -44,6 +44,7 @@ function Particles() {
   );
 }
 
+/* ── Wireframe Sphere ───────────────── */
 function WireframeSphere() {
   const meshRef = useRef<THREE.Mesh>(null);
   useFrame(({ clock }) => {
@@ -54,12 +55,13 @@ function WireframeSphere() {
   });
   return (
     <mesh ref={meshRef} position={[0, 0, 0]}>
-      <icosahedronGeometry args={[3.8, 4]} />
+      <icosahedronGeometry args={[4.3, 4]} />
       <meshBasicMaterial color={0x14b8a6} wireframe transparent opacity={0.4} />
     </mesh>
   );
 }
 
+/* ── Proportional Orbital Rings ─────────────────────── */
 function OrbitalRing({ radius, speed, tilt, color }: { radius: number; speed: number; tilt: number; color: number }) {
   const ref = useRef<THREE.Mesh>(null);
   useFrame(({ clock }) => { if (ref.current) ref.current.rotation.z = clock.getElapsedTime() * speed; });
@@ -104,22 +106,31 @@ function GridFloor() {
 }
 
 /* ── Floating metric cards ─ */
-const FLOAT_CARDS = [
-  { label: 'Latency', value: '< 50ms', icon: '🚀', pos: 'bottom-4 sm:bottom-6 left-4 sm:left-8', delay: 0.6, floatDelay: 0 },
-  { label: 'Uptime SLA', value: '99.99%', icon: '⚡', pos: 'bottom-4 sm:bottom-6 right-4 sm:right-8', delay: 1.0, floatDelay: 1.8 },
-];
-
-function FloatCard({ card }: { card: typeof FLOAT_CARDS[0] }) {
+function FloatCard({
+  label,
+  value,
+  icon,
+  pos,
+  delay,
+  floatDelay,
+}: {
+  label: string;
+  value: string;
+  icon: string;
+  pos: string;
+  delay: number;
+  floatDelay: number;
+}) {
   return (
     <motion.div
-      className={`absolute ${card.pos} z-[20] block pointer-events-auto`}
+      className={`absolute ${pos} z-[20] block pointer-events-auto`}
       initial={{ opacity: 0, scale: 0.75, y: 16 }}
       animate={{ opacity: 1, scale: 1, y: 0 }}
-      transition={{ delay: card.delay, duration: 1, ease: [0.23, 1, 0.32, 1] }}
+      transition={{ delay, duration: 1, ease: [0.23, 1, 0.32, 1] }}
     >
       <motion.div
         animate={{ y: [0, -8, 0] }}
-        transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut', delay: card.floatDelay }}
+        transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut', delay: floatDelay }}
         className="group relative cursor-default transition-all duration-300 hover:border-cyan-400/50 hover:shadow-[0_0_20px_rgba(0,229,255,0.2)]"
         style={{
           background: 'rgba(5,5,8,0.85)',
@@ -128,33 +139,33 @@ function FloatCard({ card }: { card: typeof FLOAT_CARDS[0] }) {
           backdropFilter: 'blur(20px)',
           borderRadius: 12,
           padding: '8px 12px',
-          minWidth: 110,
+          minWidth: 120,
         }}
       >
         <div className="absolute top-2 left-2 w-1.5 h-1.5" style={{ borderTop: '1px solid rgba(0,229,255,0.4)', borderLeft: '1px solid rgba(0,229,255,0.4)' }} />
         <div className="absolute bottom-2 right-2 w-1.5 h-1.5" style={{ borderBottom: '1px solid rgba(0,229,255,0.4)', borderRight: '1px solid rgba(0,229,255,0.4)' }} />
         <div className="flex items-center gap-1.5 mb-0.5">
-          <span className="text-xs">{card.icon}</span>
-          <span className="text-[9px] sm:text-[10px] font-mono font-semibold text-gray-400 uppercase tracking-wider">{card.label}</span>
+          <span className="text-xs">{icon}</span>
+          <span className="text-[9px] sm:text-[10px] font-mono font-semibold text-gray-400 uppercase tracking-wider">{label}</span>
         </div>
-        <div className="text-xs sm:text-base font-bold font-mono text-cyan-400 drop-shadow-[0_0_8px_rgba(0,229,255,0.5)]">{card.value}</div>
+        <div className="text-xs sm:text-sm font-bold font-mono text-cyan-400 drop-shadow-[0_0_8px_rgba(0,229,255,0.5)]">{value}</div>
         <div className="mt-1 h-1 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.06)' }}>
-          <motion.div className="h-full bg-gradient-to-r from-cyan-400 to-teal-300" initial={{ width: '0%' }} animate={{ width: '100%' }} transition={{ delay: card.delay + 0.4, duration: 1.2, ease: 'easeOut' }} />
+          <motion.div className="h-full bg-gradient-to-r from-cyan-400 to-teal-300" initial={{ width: '0%' }} animate={{ width: '100%' }} transition={{ delay: delay + 0.4, duration: 1.2, ease: 'easeOut' }} />
         </div>
       </motion.div>
     </motion.div>
   );
 }
 
-/* ── Animated headline — Wide Spaced for breathing room ─── */
+/* ── Animated headline ─── */
 function AnimatedHeadline() {
   const line1 = ["WE", "DON'T", "JUST", "BUILD", "WEBSITES"];
   const line2 = ["WE", "ENGINEER", "DIGITAL", "EXPERIENCES"];
 
   return (
     <div className="flex flex-col items-center justify-center max-w-5xl mx-auto text-center w-full">
-      {/* Line 1 — Pushed high up with large bottom margin (mb-8 to mb-12) */}
-      <div className="text-sm sm:text-lg md:text-xl font-bold uppercase tracking-wider text-slate-300/90 mb-8 sm:mb-10 md:mb-12 flex flex-wrap justify-center gap-x-[0.3em]">
+      {/* Line 1 — Exactly as originally styled */}
+      <div className="text-sm xs:text-base sm:text-base md:text-base lg:text-lg font-bold uppercase tracking-wider text-white mb-1 sm:mb-2 md:mb-2 flex flex-wrap justify-center gap-x-[0.3em] drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
         {line1.map((w, i) => (
           <motion.span key={i} className="inline-block" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 + i * 0.07, duration: 0.75, ease: [0.23, 1, 0.32, 1] }}>
             {w}
@@ -162,8 +173,8 @@ function AnimatedHeadline() {
         ))}
       </div>
 
-      {/* Line 2 — Centered alone */}
-      <div className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-wider flex flex-wrap justify-center gap-x-[0.22em] leading-tight w-full">
+      {/* Line 2 — Transformed vertically with `translate-y-2.5 sm:translate-y-3` so ONLY Line 2 moves down without pushing any surrounding elements */}
+      <div className="text-4xl sm:text-5xl md:text-5xl lg:text-6xl font-extrabold tracking-wider flex flex-wrap justify-center gap-x-[0.22em] leading-tight w-full translate-y-2.5 sm:translate-y-3">
         {line2.map((w, i) => (
           <motion.span
             key={i}
@@ -180,7 +191,92 @@ function AnimatedHeadline() {
   );
 }
 
-/* ── Subtle data streams ─────────────────────── */
+/* ── Mobile Cycle Text Component ───── */
+function FadingTextCycle() {
+  const items = [
+    "PREMIUM WEBSITES",
+    "AI-POWERED PLATFORMS",
+    "BANKING SYSTEMS",
+    "E-COMMERCE SOLUTIONS",
+    "REAL ESTATE PLATFORMS",
+    "CUSTOM SOFTWARE SOLUTIONS",
+  ];
+  const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setIndex((prev) => (prev + 1) % items.length);
+    }, 2800);
+    return () => clearInterval(timer);
+  }, [items.length]);
+
+  return (
+    <div className="h-12 flex items-center justify-center mt-8 sm:mt-0 my-4">
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={index}
+          initial={{ opacity: 0, y: 12, scale: 0.95 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: -12, scale: 0.95 }}
+          transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
+          className="text-white font-mono font-extrabold text-sm xs:text-base tracking-[0.18em] uppercase text-center px-4 drop-shadow-[0_0_16px_rgba(0,229,255,1)]"
+        >
+          ✦ {items[index]} ✦
+        </motion.div>
+      </AnimatePresence>
+    </div>
+  );
+}
+
+/* ── Dual-Line Curved Marquee Component (Desktop) ───────────── */
+function CurvedMarqueePC() {
+  const [offset1, setOffset1] = useState(0);
+  const [offset2, setOffset2] = useState(0);
+
+  useEffect(() => {
+    let animId: number;
+    const animate = () => {
+      setOffset1((prev) => (prev - 0.16) % 100);
+      setOffset2((prev) => (prev + 0.16) % 100);
+      animId = requestAnimationFrame(animate);
+    };
+    animId = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(animId);
+  }, []);
+
+  const textGroup1 = "PREMIUM WEBSITES   •   AI-POWERED PLATFORMS   •   BANKING SYSTEMS   •   ";
+  const textGroup2 = "E-COMMERCE SOLUTIONS   •   REAL ESTATE PLATFORMS   •   CUSTOM SOFTWARE   •   ";
+
+  const fullLine1 = textGroup1 + textGroup1 + textGroup1;
+  const fullLine2 = textGroup2 + textGroup2 + textGroup2;
+
+  return (
+    <div className="w-full max-w-2xl sm:max-w-3xl mx-auto mt-2 sm:mt-4 overflow-hidden pointer-events-none">
+      <svg viewBox="0 0 800 210" className="w-full h-auto overflow-visible">
+        <defs>
+          <path id="pcGlobeArc1" d="M 80,30 Q 400,125 720,30" fill="none" />
+          <path id="pcGlobeArc2" d="M 120,95 Q 400,180 680,95" fill="none" />
+        </defs>
+
+        {/* Arc 1 */}
+        <text className="fill-white text-[13px] sm:text-[14px] font-mono font-bold tracking-[0.2em] uppercase drop-shadow-[0_0_10px_rgba(0,229,255,0.9)]">
+          <textPath href="#pcGlobeArc1" startOffset={`${offset1}%`}>
+            {fullLine1}
+          </textPath>
+        </text>
+
+        {/* Arc 2 */}
+        <text className="fill-cyan-300 text-[12px] sm:text-[13px] font-mono font-extrabold tracking-[0.2em] uppercase drop-shadow-[0_0_12px_rgba(0,229,255,1)]">
+          <textPath href="#pcGlobeArc2" startOffset={`${offset2}%`}>
+            {fullLine2}
+          </textPath>
+        </text>
+      </svg>
+    </div>
+  );
+}
+
+/* ── Data streams ─────────────────────── */
 function DataStreams() {
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden">
@@ -199,6 +295,35 @@ export default function HeroSection() {
   const sectionRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(sectionRef, { margin: "100px 0px 100px 0px" });
 
+  const [currentDate, setCurrentDate] = useState('');
+  const [currentTime, setCurrentTime] = useState('');
+
+  useEffect(() => {
+    const updateDateTime = () => {
+      const now = new Date();
+
+      setCurrentDate(
+        now.toLocaleDateString('en-US', {
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric',
+        }).toUpperCase()
+      );
+
+      setCurrentTime(
+        now.toLocaleTimeString('en-US', {
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: true,
+        })
+      );
+    };
+
+    updateDateTime();
+    const timer = setInterval(updateDateTime, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
   return (
     <section ref={sectionRef} className="relative w-full min-h-screen flex items-center justify-center overflow-hidden bg-black scanlines py-12">
 
@@ -206,16 +331,16 @@ export default function HeroSection() {
       <div className="absolute inset-0 z-0 flex items-center justify-center pointer-events-none">
         <Canvas
           frameloop={isInView ? 'always' : 'demand'}
-          camera={{ position: [0, 0, typeof window !== 'undefined' && window.innerWidth < 768 ? 22 : 12], fov: 55 }}
+          camera={{ position: [0, 0, 12], fov: 55 }}
           gl={{ antialias: true, alpha: true }}
           onCreated={({ gl }) => { gl.setClearColor(0x000000, 0); }}
         >
           <CameraParallax />
           <Particles />
           <WireframeSphere />
-          <OrbitalRing radius={5} speed={0.30} tilt={0.3} color={0x00e5ff} />
-          <OrbitalRing radius={6.5} speed={-0.20} tilt={1.1} color={0x00ffd1} />
-          <OrbitalRing radius={8} speed={0.15} tilt={0.7} color={0x3b82f6} />
+          <OrbitalRing radius={5.2} speed={0.30} tilt={0.3} color={0x00e5ff} />
+          <OrbitalRing radius={6.6} speed={-0.20} tilt={1.1} color={0x00ffd1} />
+          <OrbitalRing radius={8.0} speed={0.15} tilt={0.7} color={0x3b82f6} />
           <GridFloor />
         </Canvas>
       </div>
@@ -228,25 +353,44 @@ export default function HeroSection() {
       {/* Data streams */}
       <div className="absolute inset-0 z-[2]"><DataStreams /></div>
 
-      {/* Float cards */}
-      {FLOAT_CARDS.map((c, i) => <FloatCard key={i} card={c} />)}
+      {/* Dynamic Date Tag — Bottom Left */}
+      <FloatCard
+        label="System Date"
+        value={currentDate || 'JUL 22, 2026'}
+        icon="🚀"
+        pos="bottom-4 sm:bottom-6 left-4 sm:left-8"
+        delay={0.6}
+        floatDelay={0}
+      />
 
-      {/* Main content — z-10 */}
-      <div className="relative z-10 flex flex-col items-center justify-center text-center px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto w-full">
+      {/* Dynamic Live Time Tag — Bottom Right */}
+      <FloatCard
+        label="Live Time"
+        value={currentTime || '08:54 AM'}
+        icon="⚡"
+        pos="bottom-4 sm:bottom-6 right-4 sm:right-8"
+        delay={1.0}
+        floatDelay={1.8}
+      />
+
+      {/* Main content wrapper — Exact position untouched */}
+      <div className="relative z-10 flex flex-col items-center justify-center text-center px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto w-full translate-y-3 sm:translate-y-12">
 
         <AnimatedHeadline />
 
-        {/* Subtitle Paragraph — Pushed way down with large top margin (mt-10 to mt-14) */}
-        <motion.p initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.25, duration: 0.75 }}
-          className="mt-10 sm:mt-12 md:mt-14 max-w-lg md:max-w-2xl mx-auto px-4 text-sm md:text-base font-semibold text-slate-100 leading-relaxed drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]">
-          Premium websites · AI-powered platforms · Banking systems ·
-          E-commerce solutions · Real estate platforms · Custom software
-          that transforms businesses
-        </motion.p>
+        {/* Desktop View: Dual Arc Marquee */}
+        <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.25, duration: 0.75 }} className="hidden sm:block w-full">
+          <CurvedMarqueePC />
+        </motion.div>
+
+        {/* Mobile View: High-Visibility Fading Text Cycle */}
+        <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.25, duration: 0.75 }} className="block sm:hidden w-full">
+          <FadingTextCycle />
+        </motion.div>
 
       </div>
 
-      {/* SCROLL Indicator — Pinned to bottom, dead-center fixed with pl-[0.3em] to counteract letter-spacing bug */}
+      {/* SCROLL Indicator */}
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}

@@ -177,14 +177,7 @@ export default function TechStackSection() {
           <motion.div
             initial={{ opacity: 0, y: 16 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.7 }}
             className="text-xs tracking-wider uppercase text-cyan-400 font-mono mb-2"
-          >OUR ARSENAL</motion.div>
-
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ delay: 0.1, duration: 0.8 }}
-            className="text-2xl md:text-3xl font-bold tracking-tight text-white mb-2"
-          >
-            Industry-Leading <span className="text-gradient-cyan">Technology Stack</span>
-          </motion.h2>
+          >We use industry leading technology stack</motion.div>
 
           <motion.p
             initial={{ opacity: 0, y: 14 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ delay: 0.2, duration: 0.7 }}

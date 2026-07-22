@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   FolderKanban,
@@ -104,9 +105,11 @@ interface QuickActionProps {
   delay: number;
 }
 
+const MotionLink = motion(Link);
+
 const QuickAction = ({ href, icon, label, description, delay }: QuickActionProps) => (
-  <motion.a
-    href={href}
+  <MotionLink
+    to={href}
     initial={{ opacity: 0, x: -16 }}
     animate={{ opacity: 1, x: 0 }}
     transition={{ duration: 0.4, delay }}
@@ -126,11 +129,11 @@ const QuickAction = ({ href, icon, label, description, delay }: QuickActionProps
       </div>
       <div>
         <p className="text-sm font-medium text-white">{label}</p>
-        <p className="text-xs text-gray-500">{description}</p>
+        <p className="text-xs text-gray-400">{description}</p>
       </div>
     </div>
-    <ArrowRight size={16} className="text-gray-600 group-hover:text-cyan-400 transition-colors" />
-  </motion.a>
+    <ArrowRight size={16} className="text-gray-400 group-hover:text-cyan-400 transition-colors" />
+  </MotionLink>
 );
 
 // ─── Main Component ───────────────────────────────────────────────────────────

@@ -78,14 +78,7 @@ export default function ProjectsSection() {
           <motion.div
             initial={{ opacity: 0, y: 14 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
             className="text-xs tracking-wider uppercase text-cyan-400 font-mono mb-2"
-          >FEATURED WORK</motion.div>
-          
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }}
-            className="text-2xl md:text-3xl font-bold tracking-tight text-white"
-          >
-            Projects That <span className="text-gradient-cyan">Set New Standards</span>
-          </motion.h2>
+          >Projects That Set New Standards</motion.div>
         </div>
 
         {/* Short Filter Category Tabs */}

@@ -138,6 +138,8 @@ export default function AdminPage() {
         <header className="sticky top-0 z-30 h-14 flex items-center gap-4 px-6"
           style={{ background: 'rgba(0,0,0,0.9)', backdropFilter: 'blur(20px)', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
           <button onClick={() => setSidebarOpen(o => !o)}
+            aria-label="Toggle admin sidebar navigation"
+            aria-expanded={sidebarOpen}
             className="lg:hidden w-9 h-9 flex items-center justify-center rounded-lg glass border border-white/10">
             {sidebarOpen ? <X size={17} /> : <Menu size={17} />}
           </button>

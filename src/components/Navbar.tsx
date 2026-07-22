@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import { Menu, X, Zap, ArrowRight } from 'lucide-react';
+import { supabase } from '@/lib/supabase';
 
 const navLinks = [
   { label: 'Services',  href: '#services' },
@@ -12,8 +13,10 @@ const navLinks = [
 ];
 
 export default function Navbar() {
-  const [open, setOpen]       = useState(false);
-  const [scrolled, setScrolled] = useState(false);
+  const [open, setOpen]         = useState(false);
+  const [scrolled, setScrolled]   = useState(false);
+  const [siteLogoUrl, setSiteLogoUrl] = useState<string | null>(null);
+
   const { scrollY } = useScroll();
   const navBg = useTransform(scrollY, [0, 80], ['rgba(0,0,0,0)', 'rgba(4,4,4,0.94)']);
   const borderOpacity = useTransform(scrollY, [0, 80], [0, 1]);
@@ -21,6 +24,20 @@ export default function Navbar() {
   useEffect(() => {
     return scrollY.onChange(v => setScrolled(v > 40));
   }, [scrollY]);
+
+  // Fetch dynamic admin-editable logo URL if set in Supabase
+  useEffect(() => {
+    supabase
+      .from('site_settings')
+      .select('logo_url')
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data?.logo_url) {
+          setSiteLogoUrl(data.logo_url);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   return (
     <>
@@ -44,25 +61,31 @@ export default function Navbar() {
             borderBottom: scrolled ? '1px solid rgba(255,255,255,0.055)' : '1px solid transparent',
           }}
         >
-          <div className="max-w-7xl mx-auto px-6 h-[62px] flex items-center justify-between">
-            {/* Logo */}
-            <a href="/" className="flex items-center gap-2.5 group">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 h-[56px] sm:h-[62px] flex items-center justify-between">
+            
+            {/* Compact Dynamic Brand Logo */}
+            <a href="/" className="flex items-center gap-2 group" aria-label="Giverham Tech Homepage">
               <motion.div
-                className="w-8 h-8 rounded-lg flex items-center justify-center"
-                style={{ background: 'linear-gradient(135deg, #00E5FF, #00FFD1)' }}
-                whileHover={{ scale: 1.1, rotate: 5 }}
+                className="w-7 h-7 sm:w-9 sm:h-9 rounded-lg flex items-center justify-center overflow-hidden shrink-0"
+                style={!siteLogoUrl ? { background: 'linear-gradient(135deg, #00E5FF, #00FFD1)' } : {}}
+                whileHover={{ scale: 1.08, rotate: 3 }}
                 transition={{ type: 'spring', stiffness: 400 }}
               >
-                <Zap size={15} className="text-black" fill="currentColor" />
+                {siteLogoUrl ? (
+                  <img src={siteLogoUrl} alt="Giverham Tech Logo" className="w-full h-full object-contain" />
+                ) : (
+                  <Zap size={14} className="text-black sm:w-[16px] sm:h-[16px]" fill="currentColor" />
+                )}
               </motion.div>
+
               <div className="flex items-baseline gap-0.5">
-                <span className="font-black text-white tracking-tight text-[17px]">GIVERHAM</span>
-                <span className="font-extralight text-cyan-400 text-[17px] ml-1">TECH</span>
+                <span className="font-black text-white tracking-wider text-xs sm:text-base md:text-lg">GIVERHAM</span>
+                <span className="font-extralight text-cyan-400 tracking-wider text-xs sm:text-base md:text-lg ml-0.5 sm:ml-1">TECH</span>
               </div>
             </a>
 
-            {/* Desktop nav */}
-            <nav className="hidden md:flex items-center">
+            {/* Desktop nav — centered & evenly spaced */}
+            <nav className="hidden md:flex items-center justify-center space-x-2 lg:space-x-4">
               {navLinks.map((link, i) => (
                 <motion.a
                   key={link.label}
@@ -70,7 +93,7 @@ export default function Navbar() {
                   initial={{ opacity: 0, y: -12 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.1 + i * 0.06, duration: 0.5 }}
-                  className="relative px-4 py-2 text-[13px] text-gray-400 hover:text-white transition-colors duration-200 group"
+                  className="relative px-4 lg:px-5 py-2 text-[13px] text-gray-300 hover:text-white transition-colors duration-200 group font-medium"
                 >
                   {link.label}
                   <span className="absolute bottom-1 left-4 right-4 h-px scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-300"
@@ -83,10 +106,11 @@ export default function Navbar() {
             <div className="flex items-center gap-3">
               <motion.a
                 href="#contact"
-                className="hidden md:flex btn-primary text-[11.5px] py-1.5 px-3.5 group"
+                className="hidden sm:flex bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 hover:bg-cyan-400 hover:text-black text-xs px-4 py-2 rounded-full font-semibold transition-all items-center gap-1.5 group"
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.6 }}
+                aria-label="Start a project with Giverham Tech"
               >
                 Start a Project
                 <ArrowRight size={13} className="group-hover:translate-x-1 transition-transform" />
@@ -95,6 +119,8 @@ export default function Navbar() {
               <button
                 onClick={() => setOpen(o => !o)}
                 className="md:hidden w-9 h-9 flex items-center justify-center rounded-xl glass border border-white/10 hover:border-cyan-400/30 transition-all"
+                aria-label="Toggle navigation menu"
+                aria-expanded={open}
               >
                 <AnimatePresence mode="wait">
                   <motion.div

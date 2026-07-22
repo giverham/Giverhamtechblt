@@ -1,10 +1,8 @@
 import { Suspense } from 'react';
 import ErrorBoundary from '@/components/ErrorBoundary';
-import CustomCursor from '@/components/CustomCursor';
 import AmbientBackground from '@/components/AmbientBackground';
 import Navbar from '@/components/Navbar';
 import HeroSection from '@/components/sections/HeroSection';
-import TrustSection from '@/components/sections/TrustSection';
 import ServicesSection from '@/components/sections/ServicesSection';
 import ProjectsSection from '@/components/sections/ProjectsSection';
 import TechStackSection from '@/components/sections/TechStackSection';
@@ -19,10 +17,6 @@ export default function HomePage() {
   return (
     <div className="relative min-h-screen bg-black overflow-x-hidden">
       <ErrorBoundary fallback={null}>
-        <CustomCursor />
-      </ErrorBoundary>
-
-      <ErrorBoundary fallback={null}>
         <AmbientBackground />
       </ErrorBoundary>
 
@@ -35,7 +29,6 @@ export default function HomePage() {
           </Suspense>
         </ErrorBoundary>
 
-        <TrustSection />
         <ServicesSection />
         <ProjectsSection />
         <TechStackSection />

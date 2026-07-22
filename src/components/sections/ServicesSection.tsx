@@ -149,10 +149,17 @@ export default function ServicesSection() {
           >WHAT WE DO</motion.div>
           <motion.h2
             initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }}
-            className="text-[clamp(1.8rem,3.8vw,3.4rem)] font-black tracking-tight leading-[0.98]"
+            className="text-lg sm:text-2xl md:text-3xl font-medium tracking-tight leading-tight text-white max-w-xs sm:max-w-xl mx-auto"
           >
-            <span className="text-white">Services Built for </span>
-            <span className="text-gradient-cyan">Modern Businesses</span>
+            Services Built for{' '}
+            <motion.span
+              animate={{ backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"] }}
+              transition={{ duration: 8, ease: "linear", repeat: Infinity }}
+              className="text-transparent bg-clip-text"
+              style={{ backgroundImage: 'linear-gradient(to right, #FDE68A, #F59E0B, #D97706, #FDE68A)', backgroundSize: '200% auto' }}
+            >
+              Modern Businesses
+            </motion.span>
           </motion.h2>
         </div>
 
