@@ -55,16 +55,16 @@ function TiltCard({ service, index }: { service: Service; index: number }) {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 40, scale: 0.94 }}
+      initial={{ opacity: 0, y: 30, scale: 0.94 }}
       whileInView={{ opacity: 1, y: 0, scale: 1 }}
       viewport={{ once: true, margin: '-40px' }}
-      transition={{ delay: (index % 5) * 0.07, duration: 0.7, ease: [0.23, 1, 0.32, 1] }}
-      className="h-full flex flex-col"
+      transition={{ delay: (index % 5) * 0.05, duration: 0.6, ease: [0.23, 1, 0.32, 1] }}
+      className="min-w-[260px] max-w-[280px] sm:min-w-[300px] flex-shrink-0 snap-center h-full flex flex-col"
       style={{ perspective: '800px' }}
     >
       <div
         ref={cardRef}
-        className="relative p-5 rounded-2xl h-full flex flex-col justify-between overflow-hidden cursor-default holo-sheen"
+        className="relative p-4 sm:p-5 rounded-2xl h-full flex flex-col justify-between overflow-hidden cursor-default holo-sheen"
         style={{
           background: `linear-gradient(145deg, ${g1}, ${g2}, rgba(0,0,0,0.4))`,
           border: `1px solid ${accentColor}20`,
@@ -87,35 +87,26 @@ function TiltCard({ service, index }: { service: Service; index: number }) {
         />
 
         {/* HUD corners */}
-        <div className="absolute top-2 left-2 w-3 h-3 pointer-events-none"
+        <div className="absolute top-2 left-2 w-2.5 h-2.5 pointer-events-none"
           style={{ borderTop: `1px solid ${accentColor}50`, borderLeft: `1px solid ${accentColor}50` }} />
-        <div className="absolute top-2 right-2 w-3 h-3 pointer-events-none"
+        <div className="absolute top-2 right-2 w-2.5 h-2.5 pointer-events-none"
           style={{ borderTop: `1px solid ${accentColor}50`, borderRight: `1px solid ${accentColor}50` }} />
-        <div className="absolute bottom-2 left-2 w-3 h-3 pointer-events-none"
+        <div className="absolute bottom-2 left-2 w-2.5 h-2.5 pointer-events-none"
           style={{ borderBottom: `1px solid ${accentColor}50`, borderLeft: `1px solid ${accentColor}50` }} />
-        <div className="absolute bottom-2 right-2 w-3 h-3 pointer-events-none"
+        <div className="absolute bottom-2 right-2 w-2.5 h-2.5 pointer-events-none"
           style={{ borderBottom: `1px solid ${accentColor}50`, borderRight: `1px solid ${accentColor}50` }} />
 
-        {/* Content */}
+        {/* Content — Icon, Short Title, 1-line description */}
         <div style={{ transform: 'translateZ(20px)', transformStyle: 'preserve-3d' }} className="flex flex-col h-full justify-between">
           <div>
-            <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-4"
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-3"
               style={{ background: `${accentColor}18`, border: `1px solid ${accentColor}30` }}>
               <Icon size={19} style={{ color: accentColor }} />
             </div>
 
-            <h3 className="text-[14px] font-bold text-white mb-2 leading-snug">{service.title}</h3>
-            <p className="text-gray-400 text-[12px] leading-relaxed mb-4">{service.description}</p>
+            <h3 className="text-sm font-bold text-white mb-1 leading-snug">{service.title}</h3>
+            <p className="text-gray-400 text-xs leading-relaxed line-clamp-1">{service.description}</p>
           </div>
-
-          <ul className="space-y-1.5 mt-auto pt-2">
-            {service.features?.slice(0, 3).map((f, i) => (
-              <li key={i} className="flex items-center gap-2 text-[11px] text-gray-400">
-                <span className="w-1 h-1 rounded-full flex-shrink-0" style={{ background: accentColor }} />
-                {f}
-              </li>
-            ))}
-          </ul>
         </div>
 
         {/* Bottom sweep */}
@@ -125,7 +116,7 @@ function TiltCard({ service, index }: { service: Service; index: number }) {
           initial={{ width: 0 }}
           whileInView={{ width: '100%' }}
           viewport={{ once: true }}
-          transition={{ delay: (index % 5) * 0.07 + 0.4, duration: 1.1, ease: [0.23, 1, 0.32, 1] }}
+          transition={{ delay: (index % 5) * 0.05 + 0.3, duration: 1.0, ease: [0.23, 1, 0.32, 1] }}
         />
       </div>
     </motion.div>
@@ -140,9 +131,6 @@ export default function ServicesSection() {
       if (data && data.length > 0) setServices(data);
     });
   }, []);
-
-  // Display primary services in balanced rows of 5 on desktop screens
-  const displayedServices = services.slice(0, 10);
 
   return (
     <section id="services" className="relative mt-4 md:mt-12 py-10 md:py-14 overflow-hidden">
@@ -168,8 +156,9 @@ export default function ServicesSection() {
           </motion.h2>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4 md:gap-6 items-stretch">
-          {displayedServices.map((s, i) => <TiltCard key={s.id} service={s} index={i} />)}
+        {/* Horizontal Carousel Row */}
+        <div className="flex overflow-x-auto snap-x snap-mandatory scrollbar-none gap-4 md:gap-6 py-4 px-4">
+          {services.map((s, i) => <TiltCard key={s.id} service={s} index={i} />)}
         </div>
       </div>
     </section>

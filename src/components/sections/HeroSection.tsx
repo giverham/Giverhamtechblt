@@ -8,25 +8,25 @@ import { ChevronDown } from 'lucide-react';
 function Particles() {
   const ref = useRef<THREE.Points>(null);
   const count = useMemo(() => (typeof window !== 'undefined' && window.innerWidth < 768 ? 1600 : 3200), []);
-  
+
   const { geo } = useMemo(() => {
     const g = new THREE.BufferGeometry();
     const positions = new Float32Array(count * 3);
-    const colors    = new Float32Array(count * 3);
+    const colors = new Float32Array(count * 3);
     for (let i = 0; i < count; i++) {
       const r = 10 + Math.random() * 12;
       const theta = Math.random() * Math.PI * 2;
-      const phi   = Math.acos(2 * Math.random() - 1);
-      positions[i*3]   = r * Math.sin(phi) * Math.cos(theta);
-      positions[i*3+1] = r * Math.sin(phi) * Math.sin(theta);
-      positions[i*3+2] = r * Math.cos(phi);
+      const phi = Math.acos(2 * Math.random() - 1);
+      positions[i * 3] = r * Math.sin(phi) * Math.cos(theta);
+      positions[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
+      positions[i * 3 + 2] = r * Math.cos(phi);
       const t = Math.random();
-      if (t > 0.6)      { colors[i*3]=0.17; colors[i*3+1]=0.83; colors[i*3+2]=0.75; } // Neon Teal (#2dd4bf)
-      else if (t > 0.3) { colors[i*3]=0.02; colors[i*3+1]=0.71; colors[i*3+2]=0.83; } // Neon Cyan (#06b6d4)
-      else              { colors[i*3]=0.0;  colors[i*3+1]=1.0;  colors[i*3+2]=0.82; } // Bright Aquamarine (#00ffd1)
+      if (t > 0.6) { colors[i * 3] = 0.17; colors[i * 3 + 1] = 0.83; colors[i * 3 + 2] = 0.75; }
+      else if (t > 0.3) { colors[i * 3] = 0.02; colors[i * 3 + 1] = 0.71; colors[i * 3 + 2] = 0.83; }
+      else { colors[i * 3] = 0.0; colors[i * 3 + 1] = 1.0; colors[i * 3 + 2] = 0.82; }
     }
     g.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-    g.setAttribute('color',    new THREE.BufferAttribute(colors, 3));
+    g.setAttribute('color', new THREE.BufferAttribute(colors, 3));
     return { geo: g };
   }, [count]);
 
@@ -39,14 +39,7 @@ function Particles() {
 
   return (
     <points ref={ref} geometry={geo}>
-      <pointsMaterial
-        size={0.06}
-        vertexColors
-        transparent
-        opacity={0.7}
-        sizeAttenuation
-        depthWrite={false}
-      />
+      <pointsMaterial size={0.06} vertexColors transparent opacity={0.7} sizeAttenuation depthWrite={false} />
     </points>
   );
 }
@@ -82,7 +75,7 @@ function CameraParallax() {
   const mouse = useRef({ x: 0, y: 0 });
   useEffect(() => {
     const h = (e: MouseEvent) => {
-      mouse.current.x = (e.clientX / window.innerWidth  - 0.5) * 2;
+      mouse.current.x = (e.clientX / window.innerWidth - 0.5) * 2;
       mouse.current.y = -(e.clientY / window.innerHeight - 0.5) * 2;
     };
     window.addEventListener('mousemove', h);
@@ -110,83 +103,73 @@ function GridFloor() {
   );
 }
 
-/* ── Floating metric cards — 2 items anchored at bottom-left & bottom-right ─ */
+/* ── Floating metric cards ─ */
 const FLOAT_CARDS = [
-  { label: 'Latency',    value: '< 50ms', icon: '🚀', pos: 'bottom-12 md:bottom-14 left-6 md:left-8', delay: 0.6, floatDelay: 0 },
-  { label: 'Uptime SLA', value: '99.99%', icon: '⚡', pos: 'bottom-12 md:bottom-14 right-6 md:right-8', delay: 1.0, floatDelay: 1.8 },
+  { label: 'Latency', value: '< 50ms', icon: '🚀', pos: 'bottom-4 sm:bottom-6 left-4 sm:left-8', delay: 0.6, floatDelay: 0 },
+  { label: 'Uptime SLA', value: '99.99%', icon: '⚡', pos: 'bottom-4 sm:bottom-6 right-4 sm:right-8', delay: 1.0, floatDelay: 1.8 },
 ];
 
 function FloatCard({ card }: { card: typeof FLOAT_CARDS[0] }) {
   return (
     <motion.div
-      className={`absolute ${card.pos} z-[5] hidden lg:block pointer-events-auto`}
+      className={`absolute ${card.pos} z-[20] block pointer-events-auto`}
       initial={{ opacity: 0, scale: 0.75, y: 16 }}
       animate={{ opacity: 1, scale: 1, y: 0 }}
       transition={{ delay: card.delay, duration: 1, ease: [0.23, 1, 0.32, 1] }}
     >
       <motion.div
-        animate={{ y: [0, -14, 0] }}
+        animate={{ y: [0, -8, 0] }}
         transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut', delay: card.floatDelay }}
         className="group relative cursor-default transition-all duration-300 hover:border-cyan-400/50 hover:shadow-[0_0_20px_rgba(0,229,255,0.2)]"
         style={{
-          background: 'rgba(5,5,8,0.76)',
-          border: '1px solid rgba(0,229,255,0.18)',
-          boxShadow: '0 8px 32px rgba(0,0,0,0.6)',
+          background: 'rgba(5,5,8,0.85)',
+          border: '1px solid rgba(0,229,255,0.25)',
+          boxShadow: '0 8px 32px rgba(0,0,0,0.7)',
           backdropFilter: 'blur(20px)',
-          borderRadius: 16,
-          padding: '12px 16px',
-          minWidth: 148,
+          borderRadius: 12,
+          padding: '8px 12px',
+          minWidth: 110,
         }}
       >
-        <div className="absolute top-2 left-2 w-2.5 h-2.5"
-          style={{ borderTop: '1px solid rgba(0,229,255,0.35)', borderLeft: '1px solid rgba(0,229,255,0.35)' }} />
-        <div className="absolute bottom-2 right-2 w-2.5 h-2.5"
-          style={{ borderBottom: '1px solid rgba(0,229,255,0.35)', borderRight: '1px solid rgba(0,229,255,0.35)' }} />
-        <div className="flex items-center gap-2 mb-1">
-          <span className="text-sm">{card.icon}</span>
-          <span className="text-[10px] font-mono font-semibold text-gray-400 uppercase tracking-wider">{card.label}</span>
+        <div className="absolute top-2 left-2 w-1.5 h-1.5" style={{ borderTop: '1px solid rgba(0,229,255,0.4)', borderLeft: '1px solid rgba(0,229,255,0.4)' }} />
+        <div className="absolute bottom-2 right-2 w-1.5 h-1.5" style={{ borderBottom: '1px solid rgba(0,229,255,0.4)', borderRight: '1px solid rgba(0,229,255,0.4)' }} />
+        <div className="flex items-center gap-1.5 mb-0.5">
+          <span className="text-xs">{card.icon}</span>
+          <span className="text-[9px] sm:text-[10px] font-mono font-semibold text-gray-400 uppercase tracking-wider">{card.label}</span>
         </div>
-        <div className="text-lg font-black font-mono text-gradient-cyan">{card.value}</div>
-        <div className="mt-2 h-1 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.06)' }}>
-          <motion.div
-            className="h-full bg-gradient-to-r from-cyan-400 to-teal-300"
-            initial={{ width: '0%' }}
-            animate={{ width: '100%' }}
-            transition={{ delay: card.delay + 0.4, duration: 1.2, ease: 'easeOut' }}
-          />
+        <div className="text-xs sm:text-base font-bold font-mono text-cyan-400 drop-shadow-[0_0_8px_rgba(0,229,255,0.5)]">{card.value}</div>
+        <div className="mt-1 h-1 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.06)' }}>
+          <motion.div className="h-full bg-gradient-to-r from-cyan-400 to-teal-300" initial={{ width: '0%' }} animate={{ width: '100%' }} transition={{ delay: card.delay + 0.4, duration: 1.2, ease: 'easeOut' }} />
         </div>
       </motion.div>
     </motion.div>
   );
 }
 
-/* ── Animated headline — refined proportions & line spacing ─── */
+/* ── Animated headline — Wide Spaced for breathing room ─── */
 function AnimatedHeadline() {
   const line1 = ["WE", "DON'T", "JUST", "BUILD", "WEBSITES"];
   const line2 = ["WE", "ENGINEER", "DIGITAL", "EXPERIENCES"];
 
   return (
-    <div className="flex flex-col items-center justify-center max-w-5xl mx-auto">
-      {/* Line 1 — sits right above centered main headline */}
-      <div className="text-lg md:text-2xl font-bold uppercase tracking-wider text-slate-300/90 mb-3 md:mb-4 flex flex-wrap justify-center gap-x-[0.25em]">
+    <div className="flex flex-col items-center justify-center max-w-5xl mx-auto text-center w-full">
+      {/* Line 1 — Pushed high up with large bottom margin (mb-8 to mb-12) */}
+      <div className="text-sm sm:text-lg md:text-xl font-bold uppercase tracking-wider text-slate-300/90 mb-8 sm:mb-10 md:mb-12 flex flex-wrap justify-center gap-x-[0.3em]">
         {line1.map((w, i) => (
-          <motion.span key={i} className="inline-block"
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.35 + i * 0.07, duration: 0.75, ease: [0.23, 1, 0.32, 1] }}>
+          <motion.span key={i} className="inline-block" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 + i * 0.07, duration: 0.75, ease: [0.23, 1, 0.32, 1] }}>
             {w}
           </motion.span>
         ))}
       </div>
 
-      {/* Line 2 — dominant ultra-bold title centered over mesh */}
-      <div className="text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-wider flex flex-wrap justify-center gap-x-[0.22em] leading-tight">
+      {/* Line 2 — Centered alone */}
+      <div className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-wider flex flex-wrap justify-center gap-x-[0.22em] leading-tight w-full">
         {line2.map((w, i) => (
           <motion.span
             key={i}
             className={`inline-block ${i === 0 ? 'text-white' : 'shimmer-text'}`}
-            style={i > 0 ? { filter: 'drop-shadow(0 0 32px rgba(0,229,255,0.45))' } : {}}
-            initial={{ opacity: 0, y: 50, scale: 0.95 }}
+            style={i > 0 ? { filter: 'drop-shadow(0 0 28px rgba(0,229,255,0.45))' } : {}}
+            initial={{ opacity: 0, y: 30, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ delay: 0.75 + i * 0.09, duration: 0.9, ease: [0.16, 1, 0.3, 1] }}>
             {w}
@@ -217,102 +200,69 @@ export default function HeroSection() {
   const isInView = useInView(sectionRef, { margin: "100px 0px 100px 0px" });
 
   return (
-    <section ref={sectionRef} className="relative w-full min-h-screen overflow-hidden bg-black scanlines pb-12 md:pb-16">
+    <section ref={sectionRef} className="relative w-full min-h-screen flex items-center justify-center overflow-hidden bg-black scanlines py-12">
 
-      {/* 3D Canvas — bottom layer with frameloop throttling when offscreen */}
-      <div className="absolute inset-0 z-0">
+      {/* 3D Canvas */}
+      <div className="absolute inset-0 z-0 flex items-center justify-center pointer-events-none">
         <Canvas
           frameloop={isInView ? 'always' : 'demand'}
-          camera={{ position: [0, 0, 10], fov: 55 }}
+          camera={{ position: [0, 0, typeof window !== 'undefined' && window.innerWidth < 768 ? 22 : 12], fov: 55 }}
           gl={{ antialias: true, alpha: true }}
           onCreated={({ gl }) => { gl.setClearColor(0x000000, 0); }}
         >
           <CameraParallax />
           <Particles />
           <WireframeSphere />
-          <OrbitalRing radius={5}   speed={0.30}  tilt={0.3} color={0x00e5ff} />
+          <OrbitalRing radius={5} speed={0.30} tilt={0.3} color={0x00e5ff} />
           <OrbitalRing radius={6.5} speed={-0.20} tilt={1.1} color={0x00ffd1} />
-          <OrbitalRing radius={8}   speed={0.15}  tilt={0.7} color={0x3b82f6} />
+          <OrbitalRing radius={8} speed={0.15} tilt={0.7} color={0x3b82f6} />
           <GridFloor />
         </Canvas>
       </div>
 
-      {/* Gradient overlays — z-[1] */}
-      <div className="absolute inset-0 z-[1] pointer-events-none"
-        style={{ background: 'radial-gradient(ellipse at center, transparent 18%, rgba(0,0,0,0.6) 100%)' }} />
+      {/* Gradient overlays */}
+      <div className="absolute inset-0 z-[1] pointer-events-none" style={{ background: 'radial-gradient(ellipse at center, transparent 18%, rgba(0,0,0,0.6) 100%)' }} />
       <div className="absolute inset-0 z-[1] bg-gradient-to-b from-black/45 via-transparent to-black pointer-events-none" />
       <div className="absolute inset-0 z-[1] bg-gradient-to-r from-black/30 via-transparent to-black/30 pointer-events-none" />
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[320px] z-[1] pointer-events-none"
-        style={{ background: 'radial-gradient(ellipse at top, rgba(0,229,255,0.11) 0%, transparent 70%)' }} />
 
-      {/* Data streams — z-[2] */}
+      {/* Data streams */}
       <div className="absolute inset-0 z-[2]"><DataStreams /></div>
 
-      {/* Float cards — z-[5], BEHIND main content z-10 */}
+      {/* Float cards */}
       {FLOAT_CARDS.map((c, i) => <FloatCard key={i} card={c} />)}
 
-      {/* Main content — z-10 (compact top clearance & balanced spacing) */}
-      <div className="relative z-10 flex flex-col items-center justify-center text-center px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto pt-24 md:pt-32">
+      {/* Main content — z-10 */}
+      <div className="relative z-10 flex flex-col items-center justify-center text-center px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto w-full">
 
         <AnimatedHeadline />
 
+        {/* Subtitle Paragraph — Pushed way down with large top margin (mt-10 to mt-14) */}
         <motion.p initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.25, duration: 0.75 }}
-          className="mt-8 md:mt-12 max-w-xl mx-auto px-6 md:px-0 text-sm sm:text-base md:text-lg font-semibold text-slate-100 leading-relaxed drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+          className="mt-10 sm:mt-12 md:mt-14 max-w-lg md:max-w-2xl mx-auto px-4 text-sm md:text-base font-semibold text-slate-100 leading-relaxed drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]">
           Premium websites · AI-powered platforms · Banking systems ·
           E-commerce solutions · Real estate platforms · Custom software
           that transforms businesses
         </motion.p>
 
-        {/* SCROLL Indicator — centered directly underneath subtitle */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.75, duration: 0.6 }}
-          className="hidden md:flex flex-col items-center justify-center mt-8 md:mt-12 cursor-pointer opacity-70 hover:opacity-100 transition-opacity"
-        >
-          <a href="#services" aria-label="Scroll down to services and statistics" className="flex flex-col items-center gap-1 group">
-            <motion.div animate={{ y: [0, 6, 0] }} transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut' }}>
-              <ChevronDown size={18} className="text-gray-400 group-hover:text-cyan-400 transition-colors" />
-            </motion.div>
-            <span className="text-[9px] font-mono tracking-[0.3em] text-gray-400 group-hover:text-gray-300 uppercase transition-colors">Scroll</span>
-          </a>
-        </motion.div>
-
-        {/* Mobile Metric Badges — 2 items side-by-side with staggered floating motion */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.75, duration: 0.6 }}
-          className="grid grid-cols-2 gap-3 mt-6 px-2 w-full max-w-xs mx-auto lg:hidden"
-        >
-          {[
-            { label: 'LATENCY', value: '< 50ms', floatDelay: 0 },
-            { label: 'UPTIME SLA', value: '99.99%', floatDelay: 1.8 },
-          ].map((m) => (
-            <motion.div
-              key={m.label}
-              animate={{ y: [0, -14, 0] }}
-              transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut', delay: m.floatDelay }}
-              className="relative overflow-hidden bg-slate-900/70 border border-cyan-500/30 backdrop-blur-md rounded-xl p-3 shadow-[0_0_15px_rgba(0,229,255,0.1)] text-left group hover:border-cyan-400/50 hover:shadow-[0_0_20px_rgba(0,229,255,0.2)] transition-all"
-            >
-              {/* Shimmer sweep line */}
-              <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-400/60 to-transparent" />
-
-              {/* Tiny live indicator dot in top-right corner */}
-              <span className="absolute top-2.5 right-2.5 flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-400" />
-              </span>
-
-              <div className="text-[10px] font-mono tracking-wider uppercase text-gray-400 font-semibold">{m.label}</div>
-              <div className="text-sm font-bold font-mono text-cyan-400 mt-1 drop-shadow-[0_0_8px_rgba(0,229,255,0.5)]">
-                {m.value}
-              </div>
-            </motion.div>
-          ))}
-        </motion.div>
-
       </div>
+
+      {/* SCROLL Indicator — Pinned to bottom, dead-center fixed with pl-[0.3em] to counteract letter-spacing bug */}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 1.75, duration: 0.6 }}
+        className="absolute bottom-6 sm:bottom-8 left-0 w-full flex justify-center cursor-pointer opacity-80 hover:opacity-100 transition-opacity z-20 pointer-events-auto"
+      >
+        <a href="#services" aria-label="Scroll down to services" className="flex flex-col items-center gap-1 group">
+          <motion.div animate={{ y: [0, 5, 0] }} transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut' }}>
+            <ChevronDown size={16} className="text-gray-400 group-hover:text-cyan-400 transition-colors" />
+          </motion.div>
+          <span className="text-[9px] font-mono tracking-[0.3em] pl-[0.3em] text-gray-400 group-hover:text-gray-300 uppercase transition-colors">
+            SCROLL
+          </span>
+        </a>
+      </motion.div>
+
     </section>
   );
 }
