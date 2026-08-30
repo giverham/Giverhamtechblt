@@ -48,12 +48,12 @@ function TiltCard({ service, index }: { service: Service; index: number }) {
       whileInView={{ opacity: 1, y: 0, scale: 1 }}
       viewport={{ once: true, margin: '-40px' }}
       transition={{ delay: (index % 5) * 0.05, duration: 0.6, ease: [0.23, 1, 0.32, 1] }}
-      className="min-w-[260px] max-w-[280px] sm:min-w-[300px] flex-shrink-0 snap-center h-full flex flex-col"
+      className="min-w-[200px] max-w-[240px] sm:min-w-[220px] flex-shrink-0 snap-center"
       style={{ perspective: '800px' }}
     >
       <div
         ref={cardRef}
-        className="relative p-4 sm:p-5 rounded-2xl h-full flex flex-col justify-between overflow-hidden cursor-default holo-sheen"
+        className="relative px-3.5 py-3 sm:px-4 sm:py-3.5 rounded-2xl overflow-hidden cursor-default holo-sheen"
         style={{
           background: `linear-gradient(145deg, ${g1}, ${g2}, rgba(0,0,0,0.4))`,
           border: `1px solid ${accentColor}20`,
@@ -85,17 +85,12 @@ function TiltCard({ service, index }: { service: Service; index: number }) {
         <div className="absolute bottom-2 right-2 w-2.5 h-2.5 pointer-events-none"
           style={{ borderBottom: `1px solid ${accentColor}50`, borderRight: `1px solid ${accentColor}50` }} />
 
-        {/* Content — Icon, Short Title, 1-line description */}
-        <div style={{ transform: 'translateZ(20px)', transformStyle: 'preserve-3d' }} className="flex flex-col h-full justify-between">
-          <div>
-            <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-3"
-              style={{ background: `${accentColor}18`, border: `1px solid ${accentColor}30` }}>
-              <Icon size={19} style={{ color: accentColor }} />
-            </div>
-
-            <h3 className="text-sm font-bold text-white mb-1 leading-snug">{service.title}</h3>
-            <p className="text-gray-400 text-xs leading-relaxed line-clamp-1">{service.description}</p>
+        <div style={{ transform: 'translateZ(20px)' }} className="relative flex items-center gap-3">
+          <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
+            style={{ background: `${accentColor}18`, border: `1px solid ${accentColor}30` }}>
+            <Icon size={16} style={{ color: accentColor }} />
           </div>
+          <h3 className="text-sm font-bold text-white leading-snug">{service.title}</h3>
         </div>
 
         {/* Bottom sweep */}

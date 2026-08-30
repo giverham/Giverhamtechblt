@@ -5,7 +5,7 @@ import AdminLoginPage from '@/pages/AdminLoginPage';
 import PrivacyPage from '@/pages/PrivacyPage';
 import TermsPage from '@/pages/TermsPage';
 
-const SECTION_ROUTES = ['/', '/services', '/projects', '/tech', '/about', '/testimonials', '/blog', '/contact'];
+const SECTION_ROUTES = ['/', '/services', '/projects', '/tech', '/about', '/blog', '/testimonials', '/contact'];
 
 function App() {
   return (

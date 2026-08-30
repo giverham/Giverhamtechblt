@@ -14,7 +14,7 @@ import BlogSection from '@/components/sections/BlogSection';
 import ContactSection from '@/components/sections/ContactSection';
 import Footer from '@/components/Footer';
 
-const SECTION_IDS = ['services', 'projects', 'tech', 'about', 'testimonials', 'blog', 'contact'];
+const SECTION_IDS = ['services', 'projects', 'tech', 'about', 'blog', 'testimonials', 'contact'];
 
 export default function HomePage() {
   const location = useLocation();
@@ -60,8 +60,8 @@ export default function HomePage() {
         <TechStackSection />
         <WhyUsSection />
         <FounderSection />
-        <TestimonialsSection />
         <BlogSection />
+        <TestimonialsSection />
         <ContactSection />
         <Footer />
       </div>
