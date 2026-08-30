@@ -402,22 +402,22 @@ export default function HeroSection() {
       {/* Data streams */}
       <div className="absolute inset-0 z-[2]"><DataStreams /></div>
 
-      {/* Dynamic Date Tag — Bottom Left */}
+      {/* Dynamic Date Tag — under cycle text on mobile, bottom-left on desktop */}
       <FloatCard
         label="System Date"
         value={currentDate || 'JUL 22, 2026'}
         icon="🚀"
-        pos="bottom-3 sm:bottom-6 left-3 sm:left-8"
+        pos="top-[calc(6.5rem+min(74vw,40svh)+3.4rem)] sm:top-auto sm:bottom-6 left-3 sm:left-8"
         delay={0.6}
         floatDelay={0}
       />
 
-      {/* Dynamic Live Time Tag — Bottom Right */}
+      {/* Dynamic Live Time Tag — under cycle text on mobile, bottom-right on desktop */}
       <FloatCard
         label="Live Time"
         value={currentTime || '08:54 AM'}
         icon="⚡"
-        pos="bottom-3 sm:bottom-6 right-3 sm:right-8"
+        pos="top-[calc(6.5rem+min(74vw,40svh)+3.4rem)] sm:top-auto sm:bottom-6 right-3 sm:right-8"
         delay={1.0}
         floatDelay={1.8}
       />
