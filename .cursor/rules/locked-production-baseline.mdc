@@ -1,0 +1,30 @@
+---
+description: Lock the current live Giverham Tech site. Do not change it unless the user explicitly asks.
+alwaysApply: true
+---
+
+# Locked production baseline
+
+The site is locked. Local `main`, GitHub `origin/main`, and other GitHub branches must stay on this approved version until the user explicitly asks to edit it.
+
+## Do not change unless asked
+
+- Do not restyle, redesign, revert, or “improve” the live site.
+- Do not restore older hero, footer, admin, or settings code from `feature/hero-layout-updates` or any former branch.
+- Do not switch Supabase projects. Live data is `ahyiufiufygslnnstznm`.
+- Do not hardcode contact, socials, section copy, Why Us, tech stack, services, testimonials, blog, founder, or footer. Those stay admin/CMS-driven.
+- Do not edit `HeroSection.tsx` unless the user names that file and asks for a change.
+
+## What is approved
+
+- Frontend reads `website_settings` and published CMS tables.
+- Admin Settings includes Call Us Number, WhatsApp, email, socials, footer, and section headings.
+- Why Us and Tech Stack have their own admin pages.
+- Mobile footer brand sits higher inside the same gradient panel. Desktop footer is unchanged.
+- Current section spacing is the approved gap. Do not widen it again.
+
+## If asked to fix something
+
+- Change only the named issue.
+- Do not pull former settings or old commits back onto `main`.
+- After an approved change, keep local and GitHub `main` in sync.
