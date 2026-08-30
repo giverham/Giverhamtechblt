@@ -2,6 +2,7 @@ import { useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
 import { useWebsiteSettings } from '@/hooks/useWebsiteSettings';
 import { DEFAULT_TECH_ROW1, DEFAULT_TECH_ROW2, parseJsonArray, type TechItem } from '@/lib/cmsDefaults';
+import { hideBuildToolItems } from '@/lib/publicCopy';
 
 type MarqueeItem = TechItem;
 
@@ -138,8 +139,8 @@ export default function TechStackSection() {
   const sectionRef = useRef<HTMLDivElement>(null);
   const inView = useInView(sectionRef, { once: true, amount: 0.2 });
   const { settings } = useWebsiteSettings();
-  const marqueeRow1 = parseJsonArray<TechItem>(settings.tech_stack_row1, DEFAULT_TECH_ROW1);
-  const marqueeRow2 = parseJsonArray<TechItem>(settings.tech_stack_row2, DEFAULT_TECH_ROW2);
+  const marqueeRow1 = hideBuildToolItems(parseJsonArray<TechItem>(settings.tech_stack_row1, DEFAULT_TECH_ROW1));
+  const marqueeRow2 = hideBuildToolItems(parseJsonArray<TechItem>(settings.tech_stack_row2, DEFAULT_TECH_ROW2));
   const allOrbital = [...marqueeRow1, ...marqueeRow2];
 
   const inner = allOrbital.slice(0, Math.ceil(allOrbital.length / 2));

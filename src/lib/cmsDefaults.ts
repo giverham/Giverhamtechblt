@@ -17,7 +17,7 @@ export const DEFAULT_WHY_US: WhyUsItem[] = [
   { icon: 'Brain', title: 'AI-Powered Features', desc: 'Intelligent automation, personalization, and LLM integrations for a genuine edge.', color: '#8B5CF6', badge: 'LLM READY' },
   { icon: 'Server', title: 'Scalable Architecture', desc: 'Built to handle high volume with zero downtime and total reliability.', color: '#00FFD1', badge: '99.99% UPTIME' },
   { icon: 'Zap', title: 'Blazing Performance', desc: 'Sub-second load times, 95+ Lighthouse scores, and edge network optimizations.', color: '#F59E0B', badge: 'SUB-SECOND' },
-  { icon: 'Shield', title: 'Enterprise Security', desc: 'Encryption, RLS, authentication, and compliance baked in from day one.', color: '#3B82F6', badge: 'BANK-GRADE' },
+  { icon: 'Shield', title: 'Enterprise Security', desc: 'Encryption, access control, authentication, and compliance baked in from day one.', color: '#3B82F6', badge: 'BANK-GRADE' },
   { icon: 'Smartphone', title: 'Mobile-First Design', desc: 'Pixel-perfect responsive experiences across phones, tablets, and wide displays.', color: '#EC4899', badge: 'RESPONSIVE' },
 ];
 
@@ -26,15 +26,15 @@ export const DEFAULT_TECH_ROW1: TechItem[] = [
   { name: 'TypeScript', color: '#3178C6', mono: 'TS' },
   { name: 'Node.js', color: '#339933', mono: 'N' },
   { name: 'Express', color: '#EEEEEE', mono: 'EX' },
-  { name: 'Supabase', color: '#3ECF8E', mono: 'SB' },
   { name: 'PostgreSQL', color: '#336791', mono: 'PG' },
+  { name: 'MongoDB', color: '#47A248', mono: 'MG' },
   { name: 'OpenAI', color: '#10A37F', mono: 'AI' },
   { name: 'Tailwind CSS', color: '#06B6D4', mono: 'TW' },
 ];
 
 export const DEFAULT_TECH_ROW2: TechItem[] = [
   { name: 'Next.js', color: '#FFFFFF', mono: 'NX' },
-  { name: 'Vercel', color: '#EEEEEE', mono: 'VC' },
+  { name: 'AWS', color: '#FF9900', mono: 'AWS' },
   { name: 'GitHub', color: '#EEEEEE', mono: 'GH' },
   { name: 'Stripe', color: '#635BFF', mono: 'ST' },
   { name: 'Firebase', color: '#FFCA28', mono: 'FB' },

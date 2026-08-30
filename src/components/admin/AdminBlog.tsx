@@ -396,7 +396,7 @@ export default function AdminBlog() {
                 className={inputCls}
                 value={tagsInput}
                 onChange={(e) => setTagsInput(e.target.value)}
-                placeholder="React, TypeScript, Supabase"
+                placeholder="React, TypeScript, PostgreSQL"
               />
             </div>
           </div>

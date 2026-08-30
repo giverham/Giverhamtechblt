@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ExternalLink, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { ExternalLink, CheckCircle2 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import { hideBuildToolLabels } from '@/lib/publicCopy';
 
 interface Project {
   id: string;
@@ -17,11 +18,11 @@ interface Project {
 }
 
 const fallbackProjects: Project[] = [
-  { id: '1', title: 'Evercrest Bank', subtitle: 'Digital Banking Infrastructure', description: 'Next-generation digital banking platform built with real-time transaction processing, automated KYC verification, and enterprise-grade AI fraud detection.', features: ['Real-time Transactions', 'KYC/AML Compliance', 'AI Fraud Detection', 'Multi-currency Wallet'], tech_stack: ['React', 'TypeScript', 'Node.js', 'Supabase', 'Stripe'], category: 'Banking', image_url: 'https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=1200&q=80', live_url: '#', case_study_url: '#' },
-  { id: '2', title: 'RR Rentals', subtitle: 'Luxury Vehicle & Property Platform', description: 'Premium real estate ecosystem featuring property listings, interactive 3D virtual tours, custom map filters, and automated tenant lease management.', features: ['Interactive Property Map', 'Virtual 3D Tours', 'Automated Leases', 'Tenant Portal'], tech_stack: ['React', 'TypeScript', 'Supabase', 'Mapbox', 'Vercel'], category: 'Real Estate', image_url: 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=1200&q=80', live_url: '#', case_study_url: '#' },
-  { id: '3', title: 'MarWiz Storefront', subtitle: 'Luxury Brand Storefront', description: 'Luxury e-commerce experience for high-end fashion and horology with AR virtual try-on, AI sizing guides, and automated inventory sync.', features: ['AR Virtual Try-On', 'AI Sizing Assistant', 'Real-time Inventory', 'Multi-currency Checkout'], tech_stack: ['React', 'TypeScript', 'Supabase', 'Stripe', 'Three.js'], category: 'E-Commerce', image_url: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1200&q=80', live_url: '#', case_study_url: '#' },
-  { id: '4', title: 'Giver Studio', subtitle: 'Media & Recording Ecosystem', description: 'State-of-the-art studio management software with interactive session scheduling, real-time artist collaboration, audio stem streaming, and automated invoicing.', features: ['Session Scheduling', 'Real-time Audio Previews', 'Artist Collaboration', 'Automated Billing'], tech_stack: ['React', 'TypeScript', 'Supabase', 'WebRTC', 'Stripe'], category: 'Entertainment', image_url: 'https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&w=1200&q=80', live_url: '#', case_study_url: '#' },
-  { id: '5', title: 'AI Sport Analyst', subtitle: 'Machine Learning Analytics Engine', description: 'Intelligent sports analytics engine delivering predictive match algorithms, real-time player data telemetry, and fantasy draft recommendations.', features: ['Predictive Match AI', 'Player Performance Telemetry', 'Fantasy Draft AI', 'Live Game Stream'], tech_stack: ['React', 'TypeScript', 'OpenAI', 'Supabase', 'Python'], category: 'AI / ML', image_url: 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=1200&q=80', live_url: '#', case_study_url: '#' },
+  { id: '1', title: 'Evercrest Bank', subtitle: 'Digital Banking Infrastructure', description: 'Next-generation digital banking platform built with real-time transaction processing, automated KYC verification, and enterprise-grade AI fraud detection.', features: ['Real-time Transactions', 'KYC/AML Compliance', 'AI Fraud Detection', 'Multi-currency Wallet'], tech_stack: ['React', 'TypeScript', 'Node.js', 'PostgreSQL', 'Stripe'], category: 'Banking', image_url: 'https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=1200&q=80', live_url: '#', case_study_url: '#' },
+  { id: '2', title: 'RR Rentals', subtitle: 'Luxury Vehicle & Property Platform', description: 'Premium real estate ecosystem featuring property listings, interactive 3D virtual tours, custom map filters, and automated tenant lease management.', features: ['Interactive Property Map', 'Virtual 3D Tours', 'Automated Leases', 'Tenant Portal'], tech_stack: ['React', 'TypeScript', 'PostgreSQL', 'Mapbox', 'Next.js'], category: 'Real Estate', image_url: 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=1200&q=80', live_url: '#', case_study_url: '#' },
+  { id: '3', title: 'MarWiz Storefront', subtitle: 'Luxury Brand Storefront', description: 'Luxury e-commerce experience for high-end fashion and horology with AR virtual try-on, AI sizing guides, and automated inventory sync.', features: ['AR Virtual Try-On', 'AI Sizing Assistant', 'Real-time Inventory', 'Multi-currency Checkout'], tech_stack: ['React', 'TypeScript', 'PostgreSQL', 'Stripe', 'Three.js'], category: 'E-Commerce', image_url: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1200&q=80', live_url: '#', case_study_url: '#' },
+  { id: '4', title: 'Giver Studio', subtitle: 'Media & Recording Ecosystem', description: 'State-of-the-art studio management software with interactive session scheduling, real-time artist collaboration, audio stem streaming, and automated invoicing.', features: ['Session Scheduling', 'Real-time Audio Previews', 'Artist Collaboration', 'Automated Billing'], tech_stack: ['React', 'TypeScript', 'PostgreSQL', 'WebRTC', 'Stripe'], category: 'Entertainment', image_url: 'https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&w=1200&q=80', live_url: '#', case_study_url: '#' },
+  { id: '5', title: 'AI Sport Analyst', subtitle: 'Machine Learning Analytics Engine', description: 'Intelligent sports analytics engine delivering predictive match algorithms, real-time player data telemetry, and fantasy draft recommendations.', features: ['Predictive Match AI', 'Player Performance Telemetry', 'Fantasy Draft AI', 'Live Game Stream'], tech_stack: ['React', 'TypeScript', 'OpenAI', 'PostgreSQL', 'Python'], category: 'AI / ML', image_url: 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=1200&q=80', live_url: '#', case_study_url: '#' },
 ];
 
 const CATEGORY_CONFIG: Record<string, { color: string; bg: string }> = {
@@ -43,7 +44,8 @@ export default function ProjectsSection() {
         if (data && data.length > 0) {
           setProjects(data.map(p => ({
             ...p,
-            subtitle: p.subtitle || fallbackProjects.find(fb => fb.title === p.title)?.subtitle || 'Digital Enterprise Platform'
+            subtitle: p.subtitle || fallbackProjects.find(fb => fb.title === p.title)?.subtitle || 'Digital Enterprise Platform',
+            tech_stack: hideBuildToolLabels(p.tech_stack || []),
           })));
         }
       });
@@ -158,16 +160,12 @@ export default function ProjectsSection() {
                 <div className="flex items-center gap-2 pt-2 border-t border-white/10">
                   <a
                     href={proj.live_url || '#'}
+                    target={proj.live_url && proj.live_url !== '#' ? '_blank' : undefined}
+                    rel={proj.live_url && proj.live_url !== '#' ? 'noreferrer' : undefined}
                     className="flex-1 flex items-center justify-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-xl"
                     style={{ background: `linear-gradient(135deg, ${cardCfg.color}, ${cardCfg.color}bb)`, color: '#000' }}
                   >
                     <ExternalLink size={12} /> Live Preview
-                  </a>
-                  <a
-                    href={proj.case_study_url || '#'}
-                    className="flex-1 flex items-center justify-center gap-1 text-xs font-semibold px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-slate-200"
-                  >
-                    Case Study <ArrowRight size={12} />
                   </a>
                 </div>
               </div>
@@ -275,6 +273,8 @@ export default function ProjectsSection() {
                 <div className="flex items-center gap-3 pt-2 mt-auto">
                   <a
                     href={currentProject.live_url || '#'}
+                    target={currentProject.live_url && currentProject.live_url !== '#' ? '_blank' : undefined}
+                    rel={currentProject.live_url && currentProject.live_url !== '#' ? 'noreferrer' : undefined}
                     className="flex items-center gap-2 text-xs font-semibold px-4 py-2.5 rounded-xl transition-all hover:scale-105"
                     style={{
                       background: `linear-gradient(135deg, ${cfg.color}, ${cfg.color}bb)`,
@@ -283,13 +283,6 @@ export default function ProjectsSection() {
                     }}
                   >
                     <ExternalLink size={13} /> Live Preview
-                  </a>
-                  <a
-                    href={currentProject.case_study_url || '#'}
-                    className="btn-secondary text-xs py-2.5 px-4 group"
-                  >
-                    Case Study
-                    <ArrowRight size={13} className="group-hover:translate-x-1 transition-transform" />
                   </a>
                 </div>
               </motion.div>

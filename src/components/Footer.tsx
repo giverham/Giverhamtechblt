@@ -6,6 +6,7 @@ import { supabase } from '@/lib/supabase';
 import { useWebsiteSettings } from '@/hooks/useWebsiteSettings';
 import { normalizeHttpUrl } from '@/lib/contactLinks';
 import { DEFAULT_FOOTER_COMPANY, splitAccentTitle } from '@/lib/cmsDefaults';
+import { hideBuildToolLabels } from '@/lib/publicCopy';
 
 const companyRouteMap: Record<string, { path: string; targetId: string }> = {
   'About Us': { path: '/about', targetId: 'about' },
@@ -43,7 +44,7 @@ export default function Footer() {
   useEffect(() => {
     const load = () => {
       supabase.from('services').select('title').eq('published', true).order('sort_order').then(({ data }) => {
-        if (data?.length) setServiceTitles(data.map((row: { title: string }) => row.title));
+        if (data?.length) setServiceTitles(hideBuildToolLabels(data.map((row: { title: string }) => row.title)));
       });
     };
     load();
@@ -84,10 +85,10 @@ export default function Footer() {
         style={{ background: 'radial-gradient(ellipse at top, rgba(0,229,255,0.15), transparent)' }} />
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 md:pt-14 pb-8">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 mb-10 lg:mb-12">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 mb-8 lg:mb-12">
 
           <div className="col-span-2">
-            <div className="-translate-y-11 sm:translate-y-0">
+            <div className="-translate-y-11 sm:translate-y-0 -mb-10 sm:mb-0">
             <motion.a
               href="/"
               onClick={(e) => {

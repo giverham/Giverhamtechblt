@@ -385,7 +385,7 @@ export default function AdminProjects() {
                 className={inputCls}
                 value={techInput}
                 onChange={(e) => setTechInput(e.target.value)}
-                placeholder="React, Node.js, Supabase"
+                placeholder="React, Node.js, PostgreSQL"
               />
             </div>
           </div>

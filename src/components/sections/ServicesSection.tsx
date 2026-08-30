@@ -4,6 +4,7 @@ import * as LucideIcons from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { useWebsiteSettings } from '@/hooks/useWebsiteSettings';
 import { splitAccentTitle } from '@/lib/cmsDefaults';
+import { hideBuildToolItems } from '@/lib/publicCopy';
 
 interface Service { id: string; title: string; description: string; icon: string; features: string[]; }
 
@@ -16,9 +17,9 @@ const fallbackServices: Service[] = [
   { id: '6',  title: 'Real Estate Platforms',  description: 'Feature-rich property listing platforms with advanced search, maps, and virtual tours.',                       icon: 'Building2',    features: ['Property Listings', 'Map Integration', 'Virtual Tours'] },
   { id: '7',  title: 'Banking Systems',        description: 'Secure, compliant fintech applications with real-time transactions and fraud detection.',                      icon: 'Landmark',     features: ['Secure Transactions', 'KYC/AML', 'Compliance'] },
   { id: '8',  title: 'SaaS Applications',      description: 'Scalable software-as-a-service products with multi-tenancy, billing, and analytics.',                          icon: 'Layers',       features: ['Multi-tenancy', 'Subscription Billing', 'Analytics'] },
-  { id: '9',  title: 'Supabase Development',   description: 'Expert Supabase backends — auth, real-time, edge functions, and database design.',                             icon: 'Database',     features: ['Auth Systems', 'Real-time Data', 'Edge Functions'] },
+  { id: '9',  title: 'Backend Development',    description: 'Secure backends with authentication, real-time data, and reliable database design.',                           icon: 'Database',     features: ['Auth Systems', 'Real-time Data', 'API Design'] },
   { id: '10', title: 'API Integration',        description: 'Seamlessly connect third-party services — payments, communications, data providers.',                          icon: 'Plug',         features: ['REST & GraphQL', 'Webhook Handling', 'Documentation'] },
-  { id: '11', title: 'Vercel Deployment',      description: 'Lightning-fast deployments on Vercel with CI/CD pipelines and performance monitoring.',                        icon: 'Zap',          features: ['CI/CD Pipeline', 'Edge Network', 'Analytics'] },
+  { id: '11', title: 'Cloud Deployment',       description: 'Fast, reliable launches with automated delivery and performance monitoring.',                                  icon: 'Zap',          features: ['CI/CD Pipeline', 'Global Delivery', 'Analytics'] },
   { id: '12', title: 'Website Maintenance',    description: 'Ongoing support, updates, security patches, and performance optimization for your platform.',                  icon: 'Wrench',       features: ['Security Updates', 'Performance Tuning', '24/7 Monitoring'] },
 ];
 
@@ -127,13 +128,13 @@ function TiltCard({ service, index }: { service: Service; index: number }) {
 
 export default function ServicesSection() {
   const { settings } = useWebsiteSettings();
-  const [services, setServices] = useState<Service[]>(fallbackServices);
+  const [services, setServices] = useState<Service[]>(hideBuildToolItems(fallbackServices));
   const { head: servicesHead, tail: servicesTail } = splitAccentTitle(settings.services_title);
 
   useEffect(() => {
     const load = () => {
       supabase.from('services').select('*').eq('published', true).order('sort_order').then(({ data }) => {
-        if (data && data.length > 0) setServices(data);
+        if (data && data.length > 0) setServices(hideBuildToolItems(data));
       });
     };
     load();

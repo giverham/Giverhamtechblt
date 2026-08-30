@@ -18,7 +18,7 @@ export default class ErrorBoundary extends Component<Props, State> {
     if (this.state.hasError) {
       return this.props.fallback ?? (
         <div className="flex items-center justify-center min-h-[200px] text-gray-600 text-sm font-mono">
-          Component error — check console.
+          This section could not be displayed.
         </div>
       );
     }
