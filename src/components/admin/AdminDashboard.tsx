@@ -230,9 +230,16 @@ export default function AdminDashboard() {
     {
       href: '/admin/blog',
       icon: <BookOpen size={16} className="text-cyan-400" />,
-      label: 'Blog Posts',
-      description: 'Create and publish blog articles',
+      label: 'Knowledge Hub',
+      description: 'Edit Knowledge Hub posts and details',
       delay: 0.15,
+    },
+    {
+      href: '/admin/testimonials',
+      icon: <Star size={16} className="text-cyan-400" />,
+      label: 'What Clients Say',
+      description: 'Edit testimonials shown on the website',
+      delay: 0.18,
     },
     {
       href: '/admin/messages',

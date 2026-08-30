@@ -1,35 +1,15 @@
 import { useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
+import { useWebsiteSettings } from '@/hooks/useWebsiteSettings';
+import { DEFAULT_TECH_ROW1, DEFAULT_TECH_ROW2, parseJsonArray, type TechItem } from '@/lib/cmsDefaults';
 
-const marqueeRow1 = [
-  { name: 'React',        color: '#61DAFB', mono: 'R' },
-  { name: 'TypeScript',   color: '#3178C6', mono: 'TS' },
-  { name: 'Node.js',      color: '#339933', mono: 'N' },
-  { name: 'Express',      color: '#EEEEEE', mono: 'EX' },
-  { name: 'Supabase',     color: '#3ECF8E', mono: 'SB' },
-  { name: 'PostgreSQL',   color: '#336791', mono: 'PG' },
-  { name: 'OpenAI',       color: '#10A37F', mono: 'AI' },
-  { name: 'Tailwind CSS', color: '#06B6D4', mono: 'TW' },
-];
-
-const marqueeRow2 = [
-  { name: 'Next.js',      color: '#FFFFFF', mono: 'NX' },
-  { name: 'Vercel',       color: '#EEEEEE', mono: 'VC' },
-  { name: 'GitHub',       color: '#EEEEEE', mono: 'GH' },
-  { name: 'Stripe',       color: '#635BFF', mono: 'ST' },
-  { name: 'Firebase',     color: '#FFCA28', mono: 'FB' },
-  { name: 'Docker',       color: '#2496ED', mono: 'DK' },
-  { name: 'REST APIs',    color: '#00E5FF', mono: 'API' },
-  { name: 'AI Agents',    color: '#8B5CF6', mono: 'AG' },
-];
-
-const allOrbital = [...marqueeRow1, ...marqueeRow2];
+type MarqueeItem = TechItem;
 
 /* Orbital ring — 3D rotating technology sphere */
 function OrbitalRing({
   items, radius, duration, reverse, offsetAngle = 0
 }: {
-  items: typeof marqueeRow1;
+  items: MarqueeItem[];
   radius: number;
   duration: number;
   reverse?: boolean;
@@ -115,7 +95,7 @@ function CentralCore() {
 }
 
 /* Infinite Scrolling Technology Marquee */
-function MarqueeRow({ items, reverse = false, speed = 28 }: { items: typeof marqueeRow1; reverse?: boolean; speed?: number }) {
+function MarqueeRow({ items, reverse = false, speed = 28 }: { items: MarqueeItem[]; reverse?: boolean; speed?: number }) {
   const duplicated = [...items, ...items, ...items, ...items];
 
   return (
@@ -157,9 +137,13 @@ function MarqueeRow({ items, reverse = false, speed = 28 }: { items: typeof marq
 export default function TechStackSection() {
   const sectionRef = useRef<HTMLDivElement>(null);
   const inView = useInView(sectionRef, { once: true, amount: 0.2 });
+  const { settings } = useWebsiteSettings();
+  const marqueeRow1 = parseJsonArray<TechItem>(settings.tech_stack_row1, DEFAULT_TECH_ROW1);
+  const marqueeRow2 = parseJsonArray<TechItem>(settings.tech_stack_row2, DEFAULT_TECH_ROW2);
+  const allOrbital = [...marqueeRow1, ...marqueeRow2];
 
-  const inner = allOrbital.slice(0, 8);
-  const outer = allOrbital.slice(8);
+  const inner = allOrbital.slice(0, Math.ceil(allOrbital.length / 2));
+  const outer = allOrbital.slice(Math.ceil(allOrbital.length / 2));
 
   return (
     <section ref={sectionRef} id="tech" className="relative py-10 md:py-14 overflow-hidden">
@@ -177,14 +161,13 @@ export default function TechStackSection() {
           <motion.div
             initial={{ opacity: 0, y: 16 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.7 }}
             className="text-xs tracking-wider uppercase text-cyan-400 font-mono mb-2"
-          >We use industry leading technology stack</motion.div>
+          >{settings.tech_heading}</motion.div>
 
           <motion.p
             initial={{ opacity: 0, y: 14 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ delay: 0.2, duration: 0.7 }}
             className="text-gray-400 text-xs md:text-sm max-w-xl mx-auto leading-relaxed"
           >
-            Every project is built with the most powerful tools in the industry —
-            delivering speed, security, and scalability from day one.
+            {settings.tech_description}
           </motion.p>
         </div>
 

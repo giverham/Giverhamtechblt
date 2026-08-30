@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Clock, ArrowRight, Tag } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import { useWebsiteSettings } from '@/hooks/useWebsiteSettings';
+import { BLOG_CATEGORIES } from '@/lib/cmsDefaults';
 
 interface BlogPost {
   id: string;
@@ -15,7 +17,7 @@ interface BlogPost {
   featured: boolean;
 }
 
-const categories = ['All', 'Web Development', 'AI Development', 'UI/UX', 'Business Growth', 'Technology', 'Deployment'];
+const categories = ['All', ...BLOG_CATEGORIES];
 
 const categoryColors: Record<string, string> = {
   'Web Development': '#3B82F6',
@@ -27,21 +29,30 @@ const categoryColors: Record<string, string> = {
 };
 
 export default function BlogSection() {
+  const { settings } = useWebsiteSettings();
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [activeCategory, setActiveCategory] = useState('All');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    supabase
-      .from('blog_posts')
-      .select('id, title, slug, excerpt, category, cover_image_url, reading_time, created_at, featured')
-      .eq('published', true)
-      .order('created_at', { ascending: false })
-      .limit(6)
-      .then(({ data }) => {
-        setPosts(data || []);
-        setLoading(false);
-      });
+    const load = () => {
+      supabase
+        .from('blog_posts')
+        .select('id, title, slug, excerpt, category, cover_image_url, reading_time, created_at, featured')
+        .eq('published', true)
+        .order('created_at', { ascending: false })
+        .limit(6)
+        .then(({ data }) => {
+          setPosts(data || []);
+          setLoading(false);
+        });
+    };
+    load();
+    const channel = supabase
+      .channel('blog-live')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'blog_posts' }, load)
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
   }, []);
 
   const filtered = activeCategory === 'All' ? posts : posts.filter(p => p.category === activeCategory);
@@ -58,7 +69,7 @@ export default function BlogSection() {
           <motion.div
             initial={{ opacity: 0, y: 14 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
             className="text-xs tracking-wider uppercase text-cyan-400 font-mono mb-2"
-          >The Knowledge Hub</motion.div>
+          >{settings.blog_heading}</motion.div>
         </div>
 
         {/* Category Filter Pills (Single scrollable horizontal row) */}

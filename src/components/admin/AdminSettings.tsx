@@ -1,7 +1,9 @@
 import { useEffect, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Settings, Save, Check, AlertTriangle, Loader2, Globe, Share2, BarChart2 } from 'lucide-react';
+import { Settings, Save, Check, AlertTriangle, Loader2, Globe, Share2, BarChart2, Type, FileText } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import ImageUpload from '@/components/admin/ImageUpload';
+import { DEFAULT_SITE_SETTINGS } from '@/hooks/useWebsiteSettings';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -9,7 +11,7 @@ interface Setting {
   key: string;
   value: string;
   label: string;
-  type: 'text' | 'email' | 'tel' | 'url' | 'number';
+  type: 'text' | 'email' | 'tel' | 'url' | 'number' | 'textarea' | 'image';
 }
 
 interface SettingsGroup {
@@ -25,17 +27,39 @@ interface SettingsGroup {
 const GROUPS: SettingsGroup[] = [
   {
     id: 'site',
-    title: 'Site Settings',
+    title: 'Site & Contact',
     icon: <Globe size={16} className="text-cyan-400" />,
-    description: 'Core website information and contact details.',
-    keys: ['site_name', 'tagline', 'email', 'whatsapp'],
+    description: 'These values appear on the live website immediately after save.',
+    keys: ['site_name', 'tagline', 'email', 'phone', 'whatsapp', 'logo_url', 'address'],
   },
   {
     id: 'social',
     title: 'Social Links',
     icon: <Share2 size={16} className="text-purple-400" />,
-    description: 'Your social media profile URLs.',
-    keys: ['twitter', 'instagram', 'linkedin', 'github'],
+    description: 'Full profile URLs used in the footer and contact areas.',
+    keys: ['twitter', 'instagram', 'linkedin', 'github', 'tiktok', 'facebook', 'youtube', 'threads'],
+  },
+  {
+    id: 'footer',
+    title: 'Footer',
+    icon: <FileText size={16} className="text-amber-400" />,
+    description: 'Footer bio, company links, and engineered-by credit.',
+    keys: ['footer_bio', 'footer_company', 'engineered_by', 'copyright_text'],
+  },
+  {
+    id: 'headings',
+    title: 'Section Headings',
+    icon: <Type size={16} className="text-blue-400" />,
+    description: 'Headings shown on Services, Knowledge Hub, testimonials, and contact.',
+    keys: [
+      'services_label',
+      'services_title',
+      'testimonials_heading',
+      'blog_heading',
+      'contact_label',
+      'contact_title',
+      'contact_description',
+    ],
   },
   {
     id: 'stats',
@@ -48,15 +72,33 @@ const GROUPS: SettingsGroup[] = [
 
 // ─── Default fallback labels ──────────────────────────────────────────────────
 
-const DEFAULT_LABELS: Record<string, { label: string; type: Setting['type'] }> = {
+const DEFAULT_LABELS: Record<string, { label: string; type: Setting['type']; hint?: string }> = {
   site_name: { label: 'Site Name', type: 'text' },
   tagline: { label: 'Tagline', type: 'text' },
   email: { label: 'Contact Email', type: 'email' },
-  whatsapp: { label: 'WhatsApp Number', type: 'tel' },
+  phone: { label: 'Phone Number', type: 'tel', hint: 'Shown on Call Us. Example: +2348012345678' },
+  address: { label: 'Address', type: 'text' },
+  whatsapp: { label: 'WhatsApp Number', type: 'tel', hint: 'Full number with country code, e.g. +2348012345678. Do not paste only the digits without the country code unless it already includes 234.' },
+  logo_url: { label: 'Site Logo', type: 'image' },
   twitter: { label: 'Twitter / X URL', type: 'url' },
   instagram: { label: 'Instagram URL', type: 'url' },
   linkedin: { label: 'LinkedIn URL', type: 'url' },
   github: { label: 'GitHub URL', type: 'url' },
+  tiktok: { label: 'TikTok URL', type: 'url' },
+  facebook: { label: 'Facebook URL', type: 'url' },
+  youtube: { label: 'YouTube URL', type: 'url' },
+  threads: { label: 'Threads URL', type: 'url' },
+  footer_bio: { label: 'Footer Bio', type: 'textarea' },
+  footer_company: { label: 'Footer Company Links', type: 'text', hint: 'Comma-separated: About Us, Blog, Projects, Testimonials, Contact' },
+  engineered_by: { label: 'Engineered By', type: 'text' },
+  copyright_text: { label: 'Copyright Text', type: 'text', hint: 'Leave blank to use “© YEAR Giverham Tech. All rights reserved.”' },
+  services_label: { label: 'Services Label', type: 'text' },
+  services_title: { label: 'Services Heading', type: 'text' },
+  testimonials_heading: { label: 'Clients Say Heading', type: 'text' },
+  blog_heading: { label: 'Knowledge Hub Heading', type: 'text' },
+  contact_label: { label: 'Contact Label', type: 'text' },
+  contact_title: { label: 'Contact Heading', type: 'textarea' },
+  contact_description: { label: 'Contact Description', type: 'textarea' },
   stats_projects: { label: 'Projects Completed', type: 'number' },
   stats_technologies: { label: 'Technologies Used', type: 'number' },
   stats_clients: { label: 'Happy Clients', type: 'number' },
@@ -113,16 +155,19 @@ export default function AdminSettings() {
           label: row.label || DEFAULT_LABELS[row.key]?.label || row.key,
           type: (row.type as Setting['type']) || DEFAULT_LABELS[row.key]?.type || 'text',
         };
-        values[row.key] = row.value ?? '';
+        values[row.key] = row.value || DEFAULT_SITE_SETTINGS[row.key] || '';
       });
 
       // Ensure all default keys exist even if not in DB
       Object.entries(DEFAULT_LABELS).forEach(([key, meta]) => {
         if (!map[key]) {
-          map[key] = { key, value: '', label: meta.label, type: meta.type };
-          values[key] = '';
+          map[key] = { key, value: DEFAULT_SITE_SETTINGS[key] || '', label: meta.label, type: meta.type };
+          values[key] = DEFAULT_SITE_SETTINGS[key] || '';
         }
       });
+
+      if (!values.phone && values.phone_number) values.phone = values.phone_number;
+      if (!values.logo_url && values.site_logo_url) values.logo_url = values.site_logo_url;
 
       setSettings(map);
       setLocalValues(values);
@@ -143,22 +188,36 @@ export default function AdminSettings() {
     setSaving(groupId);
     const errors: string[] = [];
 
+    const aliasKeys: Record<string, string> = {
+      phone: 'phone_number',
+      logo_url: 'site_logo_url',
+    };
+
     for (const key of group.keys) {
       const value = localValues[key] ?? '';
-      // Try update first, then upsert
-      const { error } = await supabase
-        .from('website_settings')
-        .upsert(
-          {
-            key,
-            value,
-            label: settings[key]?.label || DEFAULT_LABELS[key]?.label || key,
-            type: settings[key]?.type || DEFAULT_LABELS[key]?.type || 'text',
-          },
-          { onConflict: 'key' }
-        );
+      const rows = [
+        {
+          key,
+          value,
+          label: settings[key]?.label || DEFAULT_LABELS[key]?.label || key,
+          type: settings[key]?.type || DEFAULT_LABELS[key]?.type || 'text',
+        },
+      ];
+      if (aliasKeys[key]) {
+        rows.push({
+          key: aliasKeys[key],
+          value,
+          label: DEFAULT_LABELS[key]?.label || aliasKeys[key],
+          type: DEFAULT_LABELS[key]?.type || 'text',
+        });
+      }
 
-      if (error) errors.push(`${key}: ${error.message}`);
+      for (const row of rows) {
+        const { error } = await supabase
+          .from('website_settings')
+          .upsert(row, { onConflict: 'key' });
+        if (error) errors.push(`${row.key}: ${error.message}`);
+      }
     }
 
     if (errors.length > 0) {
@@ -250,16 +309,30 @@ export default function AdminSettings() {
                 {group.keys.map((key) => {
                   const meta = settings[key];
                   if (!meta) return null;
+                  const hint = DEFAULT_LABELS[key]?.hint;
+                  const wide = meta.type === 'textarea' || meta.type === 'image' || key === 'footer_bio' || key === 'footer_company';
                   return (
-                    <div key={key}>
+                    <div key={key} className={wide ? 'sm:col-span-2' : ''}>
                       <label className={labelCls}>{meta.label}</label>
-                      <input
-                        type={meta.type}
-                        className={inputCls}
-                        value={localValues[key] ?? ''}
-                        onChange={(e) => handleChange(key, e.target.value)}
-                        placeholder={`Enter ${meta.label.toLowerCase()}...`}
-                      />
+                      {meta.type === 'image' ? (
+                        <ImageUpload value={localValues[key] ?? ''} onChange={(url) => handleChange(key, url)} label="Upload logo" />
+                      ) : meta.type === 'textarea' ? (
+                        <textarea
+                          className={`${inputCls} min-h-[88px]`}
+                          value={localValues[key] ?? ''}
+                          onChange={(e) => handleChange(key, e.target.value)}
+                          placeholder={`Enter ${meta.label.toLowerCase()}...`}
+                        />
+                      ) : (
+                        <input
+                          type={meta.type === 'number' ? 'text' : meta.type}
+                          className={inputCls}
+                          value={localValues[key] ?? ''}
+                          onChange={(e) => handleChange(key, e.target.value)}
+                          placeholder={`Enter ${meta.label.toLowerCase()}...`}
+                        />
+                      )}
+                      {hint && <p className="mt-1.5 text-[11px] text-gray-500 leading-relaxed">{hint}</p>}
                     </div>
                   );
                 })}

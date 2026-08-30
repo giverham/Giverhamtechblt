@@ -2,6 +2,8 @@ import { useEffect, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Pencil, Trash2, X, Check, Loader2, AlertTriangle, BookOpen, Clock } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import ImageUpload from '@/components/admin/ImageUpload';
+import { BLOG_CATEGORIES } from '@/lib/cmsDefaults';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -36,7 +38,7 @@ const EMPTY_FORM: BlogForm = {
   featured: false,
 };
 
-const CATEGORIES = ['Technology', 'Design', 'Business', 'Finance', 'Real Estate', 'AI/ML', 'Case Study', 'Other'];
+const CATEGORIES = BLOG_CATEGORIES;
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -382,12 +384,10 @@ export default function AdminBlog() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className={labelCls}>Cover Image URL</label>
-              <input
-                className={inputCls}
+              <ImageUpload
                 value={form.cover_image_url}
-                onChange={(e) => setForm((f) => ({ ...f, cover_image_url: e.target.value }))}
-                placeholder="https://..."
+                onChange={(url) => setForm((f) => ({ ...f, cover_image_url: url }))}
+                label="Cover image"
               />
             </div>
             <div>

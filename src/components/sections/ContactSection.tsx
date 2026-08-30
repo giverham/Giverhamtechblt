@@ -2,13 +2,27 @@ import { useState, useRef } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { Send, MessageCircle, Mail, ArrowRight, CheckCircle, AlertCircle, Phone } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import { useWebsiteSettings } from '@/hooks/useWebsiteSettings';
+import { formatWhatsAppLabel, normalizeTelHref, normalizeWhatsAppUrl } from '@/lib/contactLinks';
+import { splitAccentTitle } from '@/lib/cmsDefaults';
 
 interface FormData { name: string; email: string; phone: string; subject: string; message: string; }
 
 export default function ContactSection() {
+  const { settings } = useWebsiteSettings();
   const sectionRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: sectionRef, offset: ['start end', 'end start'] });
   const bgY = useTransform(scrollYProgress, [0, 1], ['0%', '15%']);
+  const email = settings.email;
+  const emailHref = email ? `mailto:${email}` : '#';
+  const whatsappHref = normalizeWhatsAppUrl(settings.whatsapp);
+  const phoneHref = normalizeTelHref(settings.phone || settings.whatsapp);
+  const { head: contactHead, tail: contactTail } = splitAccentTitle(settings.contact_title);
+  const contactLinks = [
+    { Icon: Mail, label: email, href: emailHref, color: '#00E5FF' },
+    { Icon: MessageCircle, label: formatWhatsAppLabel(settings.whatsapp), href: whatsappHref || '#', color: '#10B981' },
+    { Icon: Phone, label: settings.phone || settings.whatsapp, href: phoneHref || '#', color: '#3B82F6' },
+  ];
 
   const [form, setForm] = useState<FormData>({ name: '', email: '', phone: '', subject: '', message: '' });
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
@@ -50,28 +64,30 @@ export default function ContactSection() {
           <motion.div
             initial={{ opacity: 0, y: 14 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
             className="text-xs tracking-wider uppercase text-cyan-400 font-mono mb-2"
-          >GET IN TOUCH</motion.div>
+          >{settings.contact_label}</motion.div>
 
           <motion.h2
             initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }}
             className="text-xl sm:text-2xl lg:text-3xl font-medium tracking-tight leading-tight text-white mb-2 lg:whitespace-nowrap"
           >
-            LET'S BUILD SOMETHING{' '}
+            {contactHead}{contactTail ? ' ' : ''}
+            {contactTail && (
             <motion.span
               animate={{ backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"] }}
               transition={{ duration: 8, ease: "linear", repeat: Infinity }}
               className="text-transparent bg-clip-text"
               style={{ backgroundImage: 'linear-gradient(to right, #FDE68A, #F59E0B, #D97706, #FDE68A)', backgroundSize: '200% auto' }}
             >
-              EXTRAORDINARY.
+              {contactTail}
             </motion.span>
+            )}
           </motion.h2>
 
           <motion.p
             initial={{ opacity: 0, y: 14 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.2 }}
             className="mt-2 text-xs sm:text-sm text-gray-400 max-w-lg mx-auto leading-relaxed mb-3.5"
           >
-            Ready to transform your digital presence? Let's create something world-class together.
+            {settings.contact_description}
           </motion.p>
 
           {/* Mobile Direct Contact Pills Row (lg:hidden) */}
@@ -83,13 +99,13 @@ export default function ContactSection() {
             className="flex lg:hidden items-center justify-center gap-2 max-w-sm mx-auto flex-wrap"
           >
             <a
-              href="mailto:hello@giverhamtech.com"
+              href={emailHref}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-slate-900/80 border border-cyan-500/30 text-cyan-400 hover:border-cyan-400 transition-all shadow-sm"
             >
               <Mail size={12} /> Email Us
             </a>
             <a
-              href="https://wa.me/2348100000000"
+              href={whatsappHref || '#'}
               target="_blank"
               rel="noreferrer"
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-slate-900/80 border border-emerald-500/30 text-emerald-400 hover:border-emerald-400 transition-all shadow-sm"
@@ -97,7 +113,7 @@ export default function ContactSection() {
               <MessageCircle size={12} /> WhatsApp
             </a>
             <a
-              href="tel:+2348100000000"
+              href={phoneHref || '#'}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-slate-900/80 border border-blue-500/30 text-blue-400 hover:border-blue-400 transition-all shadow-sm"
             >
               <Phone size={12} /> Call Us
@@ -122,11 +138,7 @@ export default function ContactSection() {
                 <h3 className="font-bold text-white text-xs md:text-sm mb-1 uppercase tracking-wider">Direct Contact</h3>
                 <p className="text-gray-400 text-[11px] mb-3.5">Reach us directly — we respond fast.</p>
                 <div className="space-y-2.5">
-                  {[
-                    { Icon: Mail, label: 'hello@giverhamtech.com', href: 'mailto:hello@giverhamtech.com', color: '#00E5FF' },
-                    { Icon: MessageCircle, label: 'WhatsApp: +234 810 000 0000', href: 'https://wa.me/2348100000000', color: '#10B981' },
-                    { Icon: Phone, label: '+234 810 000 0000', href: 'tel:+2348100000000', color: '#3B82F6' },
-                  ].map(item => {
+                  {contactLinks.map(item => {
                     const Ic = item.Icon;
                     return (
                       <a key={item.label} href={item.href} target="_blank" rel="noreferrer"

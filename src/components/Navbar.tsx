@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import { Menu, X, Zap, ArrowRight } from 'lucide-react';
-import { supabase } from '@/lib/supabase';
+import { useWebsiteSettings } from '@/hooks/useWebsiteSettings';
+import { splitAccentTitle } from '@/lib/cmsDefaults';
 
 const navLinks = [
   { label: 'Services',  path: '/services', targetId: 'services' },
@@ -16,7 +17,9 @@ const navLinks = [
 export default function Navbar() {
   const [open, setOpen]         = useState(false);
   const [scrolled, setScrolled]   = useState(false);
-  const [siteLogoUrl, setSiteLogoUrl] = useState<string | null>('/logo.svg');
+  const { settings } = useWebsiteSettings();
+  const siteLogoUrl = settings.logo_url || settings.site_logo_url || '/logo.svg';
+  const { head: brandHead, tail: brandTail } = splitAccentTitle(settings.site_name || 'GIVERHAM TECH');
   const navigate                = useNavigate();
   const location                = useLocation();
 
@@ -34,20 +37,6 @@ export default function Navbar() {
   useEffect(() => {
     return scrollY.onChange(v => setScrolled(v > 40));
   }, [scrollY]);
-
-  // Fetch dynamic admin-editable logo URL if set in Supabase
-  useEffect(() => {
-    supabase
-      .from('site_settings')
-      .select('logo_url')
-      .maybeSingle()
-      .then(({ data }) => {
-        if (data?.logo_url) {
-          setSiteLogoUrl(data.logo_url);
-        }
-      })
-      .catch(() => {});
-  }, []);
 
   return (
     <>
@@ -98,8 +87,8 @@ export default function Navbar() {
               </motion.div>
 
               <div className="flex items-baseline gap-0.5">
-                <span className="font-black text-white tracking-wider text-xs sm:text-base md:text-lg">GIVERHAM</span>
-                <span className="font-extralight text-cyan-400 tracking-wider text-xs sm:text-base md:text-lg ml-0.5 sm:ml-1">TECH</span>
+                <span className="font-black text-white tracking-wider text-xs sm:text-base md:text-lg">{brandHead}</span>
+                {brandTail && <span className="font-extralight text-cyan-400 tracking-wider text-xs sm:text-base md:text-lg ml-0.5 sm:ml-1">{brandTail}</span>}
               </div>
             </a>
 

@@ -1,16 +1,11 @@
 import { motion } from 'framer-motion';
-import { Palette, Shield, Zap, Brain, Smartphone, Server } from 'lucide-react';
-
-const reasons = [
-  { icon: Palette, title: 'High-Impact UI/UX', desc: 'Captivating designs driving conversions through clarity and modern aesthetics.', color: '#00E5FF', badge: 'OPTIMIZED', delay: 0 },
-  { icon: Brain, title: 'AI-Powered Features', desc: 'Intelligent automation, personalization, and LLM integrations for a genuine edge.', color: '#8B5CF6', badge: 'LLM READY', delay: 0.05 },
-  { icon: Server, title: 'Scalable Architecture', desc: 'Built to handle high volume with zero downtime and total reliability.', color: '#00FFD1', badge: '99.99% UPTIME', delay: 0.1 },
-  { icon: Zap, title: 'Blazing Performance', desc: 'Sub-second load times, 95+ Lighthouse scores, and edge network optimizations.', color: '#F59E0B', badge: 'SUB-SECOND', delay: 0.15 },
-  { icon: Shield, title: 'Enterprise Security', desc: 'Encryption, RLS, authentication, and compliance baked in from day one.', color: '#3B82F6', badge: 'BANK-GRADE', delay: 0.2 },
-  { icon: Smartphone, title: 'Mobile-First Design', desc: 'Pixel-perfect responsive experiences across phones, tablets, and wide displays.', color: '#EC4899', badge: 'RESPONSIVE', delay: 0.25 },
-];
+import * as LucideIcons from 'lucide-react';
+import { useWebsiteSettings } from '@/hooks/useWebsiteSettings';
+import { DEFAULT_WHY_US, parseJsonArray, type WhyUsItem } from '@/lib/cmsDefaults';
 
 export default function WhyUsSection() {
+  const { settings } = useWebsiteSettings();
+  const reasons = parseJsonArray<WhyUsItem>(settings.why_us_items, DEFAULT_WHY_US);
   return (
     <section id="why-us" className="relative py-8 md:py-14 overflow-hidden">
       <div className="absolute inset-0 bg-dots opacity-15" />
@@ -28,21 +23,22 @@ export default function WhyUsSection() {
             initial={{ opacity: 0, y: 14 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
             className="text-[10px] sm:text-xs tracking-wider uppercase text-cyan-400 font-mono mb-1.5"
           >
-            WHY GIVERHAM TECH
+            {settings.why_us_heading}
           </motion.div>
         </div>
 
         {/* 2-Column Grid on Mobile */}
         <div className="grid grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-4 max-w-6xl mx-auto">
-          {reasons.map((r) => {
-            const Icon = r.icon;
+          {reasons.map((r, index) => {
+            const Icon = (LucideIcons as unknown as Record<string, React.ComponentType<{ size?: number; className?: string; style?: React.CSSProperties }>>)[r.icon] || LucideIcons.Zap;
+            const delay = index * 0.05;
             return (
               <motion.div
                 key={r.title}
                 initial={{ opacity: 0, y: 20, scale: 0.97 }}
                 whileInView={{ opacity: 1, y: 0, scale: 1 }}
                 viewport={{ once: true }}
-                transition={{ delay: r.delay, duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
+                transition={{ delay, duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
                 className="group relative p-2.5 sm:p-4 rounded-lg sm:rounded-xl overflow-hidden cursor-default transition-all duration-300 hover:border-cyan-400/40 hover:shadow-[0_0_20px_rgba(0,229,255,0.1)] flex flex-col justify-between min-h-[115px] sm:min-h-[135px]"
                 style={{
                   background: 'rgba(15, 23, 42, 0.65)',

@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import * as LucideIcons from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import { useWebsiteSettings } from '@/hooks/useWebsiteSettings';
+import { splitAccentTitle } from '@/lib/cmsDefaults';
 
 interface Service { id: string; title: string; description: string; icon: string; features: string[]; }
 
@@ -124,12 +126,22 @@ function TiltCard({ service, index }: { service: Service; index: number }) {
 }
 
 export default function ServicesSection() {
+  const { settings } = useWebsiteSettings();
   const [services, setServices] = useState<Service[]>(fallbackServices);
+  const { head: servicesHead, tail: servicesTail } = splitAccentTitle(settings.services_title);
 
   useEffect(() => {
-    supabase.from('services').select('*').eq('published', true).order('sort_order').then(({ data }) => {
-      if (data && data.length > 0) setServices(data);
-    });
+    const load = () => {
+      supabase.from('services').select('*').eq('published', true).order('sort_order').then(({ data }) => {
+        if (data && data.length > 0) setServices(data);
+      });
+    };
+    load();
+    const channel = supabase
+      .channel('services-live')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'services' }, load)
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
   }, []);
 
   return (
@@ -146,20 +158,22 @@ export default function ServicesSection() {
           <motion.div
             initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
             className="section-label mb-2.5"
-          >WHAT WE DO</motion.div>
+          >{settings.services_label}</motion.div>
           <motion.h2
             initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }}
             className="text-lg sm:text-2xl md:text-3xl font-medium tracking-tight leading-tight text-white max-w-xs sm:max-w-xl mx-auto"
           >
-            Services Built for{' '}
+            {servicesHead}{servicesTail ? ' ' : ''}
+            {servicesTail && (
             <motion.span
               animate={{ backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"] }}
               transition={{ duration: 8, ease: "linear", repeat: Infinity }}
               className="text-transparent bg-clip-text"
               style={{ backgroundImage: 'linear-gradient(to right, #FDE68A, #F59E0B, #D97706, #FDE68A)', backgroundSize: '200% auto' }}
             >
-              Modern Businesses
+              {servicesTail}
             </motion.span>
+            )}
           </motion.h2>
         </div>
 

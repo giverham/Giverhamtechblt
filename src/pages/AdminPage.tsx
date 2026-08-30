@@ -1,10 +1,10 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState } from 'react';
 import { Routes, Route, Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   LayoutDashboard, FolderOpen, Wrench, Quote, FileText,
   MessageSquare, Image, Settings, LogOut, Menu, X, Zap,
-  ChevronRight, User, Globe
+  ChevronRight, User, Globe, Shield, Cpu
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 
@@ -18,14 +18,18 @@ import AdminMessages from '@/components/admin/AdminMessages';
 import AdminMedia from '@/components/admin/AdminMedia';
 import AdminSettings from '@/components/admin/AdminSettings';
 import AdminFounder from '@/components/admin/AdminFounder';
+import AdminWhyUs from '@/components/admin/AdminWhyUs';
+import AdminTech from '@/components/admin/AdminTech';
 
 const navItems = [
   { icon: LayoutDashboard, label: 'Dashboard', path: '' },
   { icon: User, label: 'Founder', path: 'founder' },
   { icon: FolderOpen, label: 'Projects', path: 'projects' },
   { icon: Wrench, label: 'Services', path: 'services' },
+  { icon: Shield, label: 'Why Us', path: 'why-us' },
+  { icon: Cpu, label: 'Tech Stack', path: 'tech' },
   { icon: Quote, label: 'Testimonials', path: 'testimonials' },
-  { icon: FileText, label: 'Blog Posts', path: 'blog' },
+  { icon: FileText, label: 'Knowledge Hub', path: 'blog' },
   { icon: MessageSquare, label: 'Messages', path: 'messages' },
   { icon: Image, label: 'Media Library', path: 'media' },
   { icon: Settings, label: 'Settings', path: 'settings' },
@@ -159,6 +163,8 @@ export default function AdminPage() {
             <Route path="/founder" element={<AdminFounder />} />
             <Route path="/projects" element={<AdminProjects />} />
             <Route path="/services" element={<AdminServices />} />
+            <Route path="/why-us" element={<AdminWhyUs />} />
+            <Route path="/tech" element={<AdminTech />} />
             <Route path="/testimonials" element={<AdminTestimonials />} />
             <Route path="/blog" element={<AdminBlog />} />
             <Route path="/messages" element={<AdminMessages />} />

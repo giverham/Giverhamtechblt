@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Star, ChevronLeft, ChevronRight } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import { useWebsiteSettings } from '@/hooks/useWebsiteSettings';
 
 interface Testimonial { id: string; name: string; role: string; company: string; content: string; rating: number; }
 
@@ -14,15 +15,24 @@ const fallback: Testimonial[] = [
 ];
 
 export default function TestimonialsSection() {
+  const { settings } = useWebsiteSettings();
   const [testimonials, setTestimonials] = useState<Testimonial[]>(fallback);
   const [active, setActive] = useState(0);
   const [dir, setDir] = useState(1);
   const timer = useRef<ReturnType<typeof setInterval>>();
 
   useEffect(() => {
-    supabase.from('testimonials').select('*').eq('published', true).order('sort_order').then(({ data }) => {
-      if (data && data.length > 0) setTestimonials(data);
-    });
+    const load = () => {
+      supabase.from('testimonials').select('*').eq('published', true).order('sort_order').then(({ data }) => {
+        if (data && data.length > 0) setTestimonials(data);
+      });
+    };
+    load();
+    const channel = supabase
+      .channel('testimonials-live')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'testimonials' }, load)
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
   }, []);
 
   const startTimer = () => {
@@ -67,7 +77,7 @@ export default function TestimonialsSection() {
           <motion.div
             initial={{ opacity: 0, y: 14 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
             className="section-label mb-2"
-          >WHAT OUR CLIENTS SAY</motion.div>
+          >{settings.testimonials_heading}</motion.div>
         </div>
 
         {/* Testimonial Card Container */}
