@@ -103,7 +103,9 @@ const listeners = new Set<(settings: Record<string, string>) => void>();
 let realtimeReady = false;
 
 function publish(next: Record<string, string>) {
-  cache = normalizeBrandKeys(next);
+  const normalized = normalizeBrandKeys(next);
+  if (loaded && JSON.stringify(normalized) === JSON.stringify(cache)) return;
+  cache = normalized;
   loaded = true;
   writeLocalCache(cache);
   applyBrandAssets(cache);
@@ -162,7 +164,8 @@ export function useWebsiteSettings() {
     };
     listeners.add(onChange);
     ensureRealtime();
-    fetchSettings().then(() => setLoading(false));
+    if (loaded) setLoading(false);
+    else fetchSettings().then(() => setLoading(false));
     return () => { listeners.delete(onChange); };
   }, []);
 
