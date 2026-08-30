@@ -165,8 +165,7 @@ function AnimatedHeadline() {
 
   return (
     <div className="flex flex-col items-center justify-center max-w-5xl mx-auto text-center w-full">
-      {/* Line 1 — Exactly as originally styled */}
-      <div className="text-sm xs:text-base sm:text-base md:text-base lg:text-lg font-bold uppercase tracking-wider text-white mb-1 sm:mb-2 md:mb-2 flex flex-wrap justify-center gap-x-[0.3em] drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
+      <div className="text-[11px] sm:text-base md:text-base lg:text-lg font-bold uppercase tracking-[0.16em] sm:tracking-wider text-white mb-3 sm:mb-2 flex flex-wrap justify-center gap-x-[0.35em] drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
         {line1.map((w, i) => (
           <motion.span key={i} className="inline-block" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 + i * 0.07, duration: 0.75, ease: [0.23, 1, 0.32, 1] }}>
             {w}
@@ -174,8 +173,30 @@ function AnimatedHeadline() {
         ))}
       </div>
 
-      {/* Line 2 — Transformed vertically with `translate-y-2.5 sm:translate-y-3` so ONLY Line 2 moves down without pushing any surrounding elements */}
-      <div className="text-4xl sm:text-5xl md:text-5xl lg:text-6xl font-extrabold tracking-wider flex flex-wrap justify-center gap-x-[0.22em] leading-tight w-full translate-y-2.5 sm:translate-y-3">
+      {/* Mobile: two even rows so every phone wraps the same way */}
+      <div className="flex flex-col items-center gap-y-1.5 sm:hidden w-full px-1">
+        <motion.div
+          className="flex justify-center gap-x-2 text-[clamp(1.28rem,5.5vw,1.55rem)] font-extrabold uppercase tracking-[0.08em] leading-none"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.75, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+        >
+          <span className="text-white">WE</span>
+          <span className="shimmer-text" style={{ filter: 'drop-shadow(0 0 18px rgba(0,229,255,0.45))' }}>ENGINEER</span>
+        </motion.div>
+        <motion.div
+          className="flex justify-center gap-x-2 text-[clamp(1.28rem,5.5vw,1.55rem)] font-extrabold uppercase tracking-[0.08em] leading-none"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.9, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+        >
+          <span className="shimmer-text" style={{ filter: 'drop-shadow(0 0 18px rgba(0,229,255,0.45))' }}>DIGITAL</span>
+          <span className="shimmer-text" style={{ filter: 'drop-shadow(0 0 18px rgba(0,229,255,0.45))' }}>EXPERIENCES</span>
+        </motion.div>
+      </div>
+
+      {/* Desktop / tablet: original single-line headline */}
+      <div className="hidden sm:flex text-5xl md:text-5xl lg:text-6xl font-extrabold tracking-wider flex-wrap justify-center gap-x-[0.22em] leading-tight w-full translate-y-3">
         {line2.map((w, i) => (
           <motion.span
             key={i}
@@ -212,7 +233,7 @@ function FadingTextCycle() {
   }, [items.length]);
 
   return (
-    <div className="h-12 flex items-center justify-center mt-8 sm:mt-0 my-4">
+    <div className="h-10 flex items-center justify-center mt-6">
       <AnimatePresence mode="wait">
         <motion.div
           key={index}
@@ -220,7 +241,7 @@ function FadingTextCycle() {
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: -12, scale: 0.95 }}
           transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
-          className="text-white font-mono font-extrabold text-sm xs:text-base tracking-[0.18em] uppercase text-center px-4 drop-shadow-[0_0_16px_rgba(0,229,255,1)]"
+          className="text-cyan-300 font-mono font-extrabold text-[11px] tracking-[0.12em] uppercase text-center px-3 drop-shadow-[0_0_16px_rgba(0,229,255,1)]"
         >
           ✦ {items[index]} ✦
         </motion.div>
@@ -376,7 +397,7 @@ export default function HeroSection() {
       />
 
       {/* Main content wrapper — Exact position untouched */}
-      <div className="relative z-10 flex flex-col items-center justify-center text-center px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto w-full translate-y-3 sm:translate-y-12">
+      <div className="relative z-10 flex flex-col items-center justify-center text-center px-5 sm:px-6 lg:px-8 max-w-4xl mx-auto w-full translate-y-0 sm:translate-y-12">
 
         <AnimatedHeadline />
 
