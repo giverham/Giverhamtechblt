@@ -45,23 +45,20 @@ function Particles() {
   );
 }
 
-function mobileGlobeScale() {
-  if (typeof window === 'undefined' || window.innerWidth >= 640) return 1;
-  const aspect = window.innerWidth / Math.max(window.innerHeight, 1);
-  const visibleWidth = 2 * Math.tan((55 * Math.PI) / 360) * 12 * aspect;
-  const sphereDiameter = 8.6;
-  return Math.max(0.44, Math.min(0.55, (visibleWidth * 0.82) / sphereDiameter));
-}
-
-function MobileGlobeFit({ children }: { children: ReactNode }) {
-  const [scale, setScale] = useState(mobileGlobeScale);
+function useIsPhone() {
+  const [isPhone, setIsPhone] = useState(() => typeof window !== 'undefined' && window.innerWidth < 640);
   useEffect(() => {
-    const update = () => setScale(mobileGlobeScale());
+    const update = () => setIsPhone(window.innerWidth < 640);
     update();
     window.addEventListener('resize', update);
     return () => window.removeEventListener('resize', update);
   }, []);
-  return <group scale={scale}>{children}</group>;
+  return isPhone;
+}
+
+function MobileGlobeFit({ children }: { children: ReactNode }) {
+  const isPhone = useIsPhone();
+  return <group scale={isPhone ? 1.16 : 1}>{children}</group>;
 }
 
 /* ── Wireframe Sphere ───────────────── */
@@ -177,46 +174,54 @@ function FloatCard({
   );
 }
 
-/* ── Animated headline ─── */
-function AnimatedHeadline() {
-  const line1 = ["WE", "DON'T", "JUST", "BUILD", "WEBSITES"];
-  const line2 = ["WE", "ENGINEER", "DIGITAL", "EXPERIENCES"];
+const HEADLINE_LINE1 = ["WE", "DON'T", "JUST", "BUILD", "WEBSITES"];
+const HEADLINE_LINE2 = ["WE", "ENGINEER", "DIGITAL", "EXPERIENCES"];
 
+function HeadlineLine1({ className }: { className?: string }) {
+  return (
+    <div className={className}>
+      {HEADLINE_LINE1.map((w, i) => (
+        <motion.span key={i} className="inline-block" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 + i * 0.07, duration: 0.75, ease: [0.23, 1, 0.32, 1] }}>
+          {w}
+        </motion.span>
+      ))}
+    </div>
+  );
+}
+
+function HeadlineLine2Mobile() {
+  return (
+    <div className="flex flex-col items-center gap-y-1.5 w-full px-1">
+      <motion.div
+        className="flex justify-center gap-x-2 text-[clamp(1.28rem,5.5vw,1.55rem)] font-extrabold uppercase tracking-[0.08em] leading-none"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.75, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+      >
+        <span className="text-white">WE</span>
+        <span className="shimmer-text" style={{ filter: 'drop-shadow(0 0 18px rgba(0,229,255,0.45))' }}>ENGINEER</span>
+      </motion.div>
+      <motion.div
+        className="flex justify-center gap-x-2 text-[clamp(1.28rem,5.5vw,1.55rem)] font-extrabold uppercase tracking-[0.08em] leading-none"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.9, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+      >
+        <span className="shimmer-text" style={{ filter: 'drop-shadow(0 0 18px rgba(0,229,255,0.45))' }}>DIGITAL</span>
+        <span className="shimmer-text" style={{ filter: 'drop-shadow(0 0 18px rgba(0,229,255,0.45))' }}>EXPERIENCES</span>
+      </motion.div>
+    </div>
+  );
+}
+
+/* ── Animated headline (desktop / tablet) ─── */
+function AnimatedHeadline() {
   return (
     <div className="flex flex-col items-center justify-center max-w-5xl mx-auto text-center w-full">
-      <div className="text-[13px] sm:text-base md:text-base lg:text-lg font-black uppercase tracking-[0.14em] sm:tracking-wider text-white mb-8 sm:mb-2 -translate-y-8 sm:translate-y-0 flex flex-wrap justify-center gap-x-[0.35em] drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
-        {line1.map((w, i) => (
-          <motion.span key={i} className="inline-block" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 + i * 0.07, duration: 0.75, ease: [0.23, 1, 0.32, 1] }}>
-            {w}
-          </motion.span>
-        ))}
-      </div>
+      <HeadlineLine1 className="text-base md:text-base lg:text-lg font-black uppercase tracking-wider text-white mb-2 flex flex-wrap justify-center gap-x-[0.35em] drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]" />
 
-      {/* Mobile: two even rows so every phone wraps the same way */}
-      <div className="flex flex-col items-center gap-y-1.5 sm:hidden w-full px-1">
-        <motion.div
-          className="flex justify-center gap-x-2 text-[clamp(1.28rem,5.5vw,1.55rem)] font-extrabold uppercase tracking-[0.08em] leading-none"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.75, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-        >
-          <span className="text-white">WE</span>
-          <span className="shimmer-text" style={{ filter: 'drop-shadow(0 0 18px rgba(0,229,255,0.45))' }}>ENGINEER</span>
-        </motion.div>
-        <motion.div
-          className="flex justify-center gap-x-2 text-[clamp(1.28rem,5.5vw,1.55rem)] font-extrabold uppercase tracking-[0.08em] leading-none"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.9, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-        >
-          <span className="shimmer-text" style={{ filter: 'drop-shadow(0 0 18px rgba(0,229,255,0.45))' }}>DIGITAL</span>
-          <span className="shimmer-text" style={{ filter: 'drop-shadow(0 0 18px rgba(0,229,255,0.45))' }}>EXPERIENCES</span>
-        </motion.div>
-      </div>
-
-      {/* Desktop / tablet: original single-line headline */}
-      <div className="hidden sm:flex text-5xl md:text-5xl lg:text-6xl font-extrabold tracking-wider flex-wrap justify-center gap-x-[0.22em] leading-tight w-full translate-y-3">
-        {line2.map((w, i) => (
+      <div className="flex text-5xl md:text-5xl lg:text-6xl font-extrabold tracking-wider flex-wrap justify-center gap-x-[0.22em] leading-tight w-full translate-y-3">
+        {HEADLINE_LINE2.map((w, i) => (
           <motion.span
             key={i}
             className={`inline-block ${i === 0 ? 'text-white' : 'shimmer-text'}`}
@@ -252,7 +257,7 @@ function FadingTextCycle() {
   }, [items.length]);
 
   return (
-    <div className="h-10 flex items-center justify-center mt-10 sm:mt-0">
+    <div className="h-10 flex items-center justify-center">
       <AnimatePresence mode="wait">
         <motion.div
           key={index}
@@ -367,10 +372,10 @@ export default function HeroSection() {
   }, []);
 
   return (
-    <section ref={sectionRef} className="relative w-full min-h-screen flex items-center justify-center overflow-hidden bg-black scanlines py-12">
+    <section ref={sectionRef} className="relative w-full h-[100svh] max-h-[100svh] sm:h-auto sm:max-h-none sm:min-h-screen flex items-center justify-center overflow-hidden bg-black scanlines py-0 sm:py-12">
 
-      {/* 3D Canvas */}
-      <div className="absolute inset-0 z-0 flex items-center justify-center pointer-events-none">
+      {/* 3D Canvas — mobile: framed under the top line so it does not fill the whole phone */}
+      <div className="absolute z-0 pointer-events-none overflow-hidden left-1/2 -translate-x-1/2 top-[6.5rem] w-[min(74vw,40svh)] aspect-square sm:inset-0 sm:left-0 sm:right-0 sm:top-0 sm:bottom-0 sm:w-auto sm:h-auto sm:max-w-none sm:aspect-auto sm:translate-x-0 sm:overflow-visible">
         <Canvas
           frameloop={isInView ? 'always' : 'demand'}
           camera={{ position: [0, 0, 12], fov: 55 }}
@@ -402,7 +407,7 @@ export default function HeroSection() {
         label="System Date"
         value={currentDate || 'JUL 22, 2026'}
         icon="🚀"
-        pos="bottom-4 sm:bottom-6 left-4 sm:left-8"
+        pos="bottom-3 sm:bottom-6 left-3 sm:left-8"
         delay={0.6}
         floatDelay={0}
       />
@@ -412,34 +417,45 @@ export default function HeroSection() {
         label="Live Time"
         value={currentTime || '08:54 AM'}
         icon="⚡"
-        pos="bottom-4 sm:bottom-6 right-4 sm:right-8"
+        pos="bottom-3 sm:bottom-6 right-3 sm:right-8"
         delay={1.0}
         floatDelay={1.8}
       />
 
-      {/* Main content wrapper — Exact position untouched */}
-      <div className="relative z-10 flex flex-col items-center justify-center text-center px-5 sm:px-6 lg:px-8 max-w-4xl mx-auto w-full translate-y-0 sm:translate-y-12">
+      {/* Mobile composition: line 1 above globe, line 2 on globe, cycle under globe */}
+      <div className="sm:hidden absolute inset-0 z-10 pointer-events-none">
+        <HeadlineLine1 className="absolute top-[4.4rem] left-0 right-0 text-[13px] font-black uppercase tracking-[0.14em] text-white flex flex-wrap justify-center gap-x-[0.35em] drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] px-4" />
+        <div className="absolute left-1/2 -translate-x-1/2 top-[6.5rem] w-[min(74vw,40svh)] aspect-square flex items-center justify-center">
+          <HeadlineLine2Mobile />
+        </div>
+        <motion.div
+          initial={{ opacity: 0, y: 18 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.25, duration: 0.75 }}
+          className="absolute left-0 right-0"
+          style={{ top: 'calc(6.5rem + min(74vw, 40svh) + 0.4rem)' }}
+        >
+          <FadingTextCycle />
+        </motion.div>
+      </div>
+
+      {/* Desktop content wrapper — position untouched */}
+      <div className="hidden sm:flex relative z-10 flex-col items-center justify-center text-center px-6 lg:px-8 max-w-4xl mx-auto w-full translate-y-12">
 
         <AnimatedHeadline />
 
-        {/* Desktop View: Dual Arc Marquee */}
-        <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.25, duration: 0.75 }} className="hidden sm:block w-full">
+        <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.25, duration: 0.75 }} className="w-full">
           <CurvedMarqueePC />
-        </motion.div>
-
-        {/* Mobile View: High-Visibility Fading Text Cycle */}
-        <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.25, duration: 0.75 }} className="block sm:hidden w-full">
-          <FadingTextCycle />
         </motion.div>
 
       </div>
 
-      {/* SCROLL Indicator */}
+      {/* SCROLL Indicator — desktop only so mobile date/time stay on the first screen */}
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 1.75, duration: 0.6 }}
-        className="absolute bottom-6 sm:bottom-8 left-0 w-full flex justify-center cursor-pointer opacity-80 hover:opacity-100 transition-opacity z-20 pointer-events-auto"
+        className="hidden sm:flex absolute bottom-8 left-0 w-full justify-center cursor-pointer opacity-80 hover:opacity-100 transition-opacity z-20 pointer-events-auto"
       >
         <a
           href="/services"
