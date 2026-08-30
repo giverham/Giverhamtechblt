@@ -87,7 +87,7 @@ export default function Footer() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 mb-10 lg:mb-12">
 
           <div className="col-span-2">
-            <div className="-translate-y-8 sm:translate-y-0">
+            <div className="-translate-y-11 sm:translate-y-0">
             <motion.a
               href="/"
               onClick={(e) => {
@@ -112,7 +112,7 @@ export default function Footer() {
               {settings.footer_bio || settings.tagline}
             </p>
             </div>
-            <div className="h-8 sm:hidden" aria-hidden />
+            <div className="h-11 sm:hidden" aria-hidden />
 
             <div className="flex gap-2.5">
               {socials.map(s => {

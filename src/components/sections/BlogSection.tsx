@@ -58,7 +58,7 @@ export default function BlogSection() {
   const filtered = activeCategory === 'All' ? posts : posts.filter(p => p.category === activeCategory);
 
   return (
-    <section id="blog" className="relative py-10 md:py-14 overflow-hidden">
+    <section id="blog" className="relative py-6 md:py-8 overflow-hidden">
       <div className="absolute inset-0 bg-grid opacity-20" />
       <div className="absolute inset-0 bg-gradient-to-b from-black via-black/98 to-black" />
 

@@ -3,7 +3,7 @@ import { motion, useScroll, useTransform } from 'framer-motion';
 import { Send, MessageCircle, Mail, ArrowRight, CheckCircle, AlertCircle, Phone } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { useWebsiteSettings } from '@/hooks/useWebsiteSettings';
-import { formatWhatsAppLabel, normalizeTelHref, normalizeWhatsAppUrl } from '@/lib/contactLinks';
+import { formatWhatsAppLabel, isUsablePhone, normalizeTelHref, normalizeWhatsAppUrl } from '@/lib/contactLinks';
 import { splitAccentTitle } from '@/lib/cmsDefaults';
 
 interface FormData { name: string; email: string; phone: string; subject: string; message: string; }
@@ -16,12 +16,17 @@ export default function ContactSection() {
   const email = settings.email;
   const emailHref = email ? `mailto:${email}` : '#';
   const whatsappHref = normalizeWhatsAppUrl(settings.whatsapp);
-  const phoneHref = normalizeTelHref(settings.phone || settings.whatsapp);
+  const callNumber =
+    [settings.phone, settings.phone_number].find(isUsablePhone)
+    || (isUsablePhone(settings.whatsapp) ? settings.whatsapp : '');
+  const phoneHref = normalizeTelHref(callNumber);
   const { head: contactHead, tail: contactTail } = splitAccentTitle(settings.contact_title);
   const contactLinks = [
     { Icon: Mail, label: email, href: emailHref, color: '#00E5FF' },
     { Icon: MessageCircle, label: formatWhatsAppLabel(settings.whatsapp), href: whatsappHref || '#', color: '#10B981' },
-    { Icon: Phone, label: settings.phone || settings.whatsapp, href: phoneHref || '#', color: '#3B82F6' },
+    ...(callNumber
+      ? [{ Icon: Phone, label: callNumber, href: phoneHref || '#', color: '#3B82F6' }]
+      : []),
   ];
 
   const [form, setForm] = useState<FormData>({ name: '', email: '', phone: '', subject: '', message: '' });
@@ -47,7 +52,7 @@ export default function ContactSection() {
   const inputCls = "w-full py-2 px-3 text-xs bg-slate-950/60 border border-slate-800 focus:border-cyan-400/50 rounded-lg text-white placeholder-gray-600 outline-none transition-all";
 
   return (
-    <section ref={sectionRef} id="contact" className="relative py-10 md:py-14 overflow-hidden">
+    <section ref={sectionRef} id="contact" className="relative py-6 md:py-8 overflow-hidden">
       {/* Parallax grid bg */}
       <motion.div className="absolute inset-0 bg-grid opacity-20" style={{ y: bgY }} />
       <div className="absolute inset-0 aurora-bg opacity-35" />
@@ -112,12 +117,14 @@ export default function ContactSection() {
             >
               <MessageCircle size={12} /> WhatsApp
             </a>
+            {callNumber && (
             <a
               href={phoneHref || '#'}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-slate-900/80 border border-blue-500/30 text-blue-400 hover:border-blue-400 transition-all shadow-sm"
             >
               <Phone size={12} /> Call Us
             </a>
+            )}
           </motion.div>
         </div>
 

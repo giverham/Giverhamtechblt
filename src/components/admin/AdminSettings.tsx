@@ -76,7 +76,7 @@ const DEFAULT_LABELS: Record<string, { label: string; type: Setting['type']; hin
   site_name: { label: 'Site Name', type: 'text' },
   tagline: { label: 'Tagline', type: 'text' },
   email: { label: 'Contact Email', type: 'email' },
-  phone: { label: 'Phone Number', type: 'tel', hint: 'Shown on Call Us. Example: +2348012345678' },
+  phone: { label: 'Call Us Number', type: 'tel', hint: 'This is the Get in Touch “Call Us” number. Use a full international number, e.g. +2348075388856.' },
   address: { label: 'Address', type: 'text' },
   whatsapp: { label: 'WhatsApp Number', type: 'tel', hint: 'Full number with country code, e.g. +2348012345678. Do not paste only the digits without the country code unless it already includes 234.' },
   logo_url: { label: 'Site Logo', type: 'image' },

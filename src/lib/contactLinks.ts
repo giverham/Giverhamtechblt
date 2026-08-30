@@ -25,6 +25,11 @@ export function normalizeHttpUrl(raw: string): string {
   return `https://${value}`;
 }
 
+export function isUsablePhone(raw: string): boolean {
+  if (!raw?.trim()) return false;
+  return !/810\s*000\s*0000/.test(raw);
+}
+
 export function formatWhatsAppLabel(raw: string): string {
   if (!raw) return 'WhatsApp';
   if (/^https?:\/\//i.test(raw.trim())) return 'WhatsApp';

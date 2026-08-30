@@ -63,7 +63,7 @@ export default function TestimonialsSection() {
   const current = testimonials[active];
 
   return (
-    <section id="testimonials" className="relative py-8 md:py-12 overflow-hidden">
+    <section id="testimonials" className="relative py-6 md:py-8 overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-b from-black via-black/96 to-black" />
 
       {/* Ambient background glow */}

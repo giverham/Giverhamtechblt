@@ -73,7 +73,7 @@ export default function ProjectsSection() {
   const cfg = CATEGORY_CONFIG[currentProject.category] || { color: '#00E5FF', bg: 'rgba(0,229,255,0.1)' };
 
   return (
-    <section id="projects" className="relative py-10 md:py-14 overflow-hidden">
+    <section id="projects" className="relative py-6 md:py-8 overflow-hidden">
       <div className="absolute inset-0 bg-grid opacity-20" />
       <div className="absolute inset-0 bg-gradient-to-b from-black via-black/95 to-black" />
 

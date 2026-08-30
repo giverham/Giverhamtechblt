@@ -145,7 +145,7 @@ export default function ServicesSection() {
   }, []);
 
   return (
-    <section id="services" className="relative mt-4 md:mt-12 py-10 md:py-14 overflow-hidden">
+    <section id="services" className="relative mt-2 md:mt-4 py-6 md:py-8 overflow-hidden">
       <div className="absolute inset-0 bg-grid opacity-25" />
       <div className="absolute inset-0 bg-gradient-to-b from-black via-black/97 to-black" />
 

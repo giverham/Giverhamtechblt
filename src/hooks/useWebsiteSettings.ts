@@ -6,7 +6,7 @@ export const DEFAULT_SITE_SETTINGS: Record<string, string> = {
   site_name: 'GIVERHAM TECH',
   tagline: 'We engineer digital experiences that transform businesses.',
   email: 'hello@giverhamtech.com',
-  phone: '+234 810 000 0000',
+  phone: '',
   phone_number: '',
   address: '',
   whatsapp: '+2348100000000',

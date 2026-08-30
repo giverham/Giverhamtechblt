@@ -146,7 +146,7 @@ export default function TechStackSection() {
   const outer = allOrbital.slice(Math.ceil(allOrbital.length / 2));
 
   return (
-    <section ref={sectionRef} id="tech" className="relative py-10 md:py-14 overflow-hidden">
+    <section ref={sectionRef} id="tech" className="relative py-6 md:py-8 overflow-hidden">
       <div className="absolute inset-0 aurora-bg opacity-30" />
       <div className="absolute inset-0 bg-gradient-to-b from-black via-black/95 to-black" />
 

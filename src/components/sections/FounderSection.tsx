@@ -49,7 +49,7 @@ export default function FounderSection() {
   const founderPhotoUrl = founder.founder_photo_url; 
 
   return (
-    <section ref={sectionRef} id="about" className="relative py-6 sm:py-10 md:py-14 overflow-hidden">
+    <section ref={sectionRef} id="about" className="relative py-5 sm:py-7 md:py-8 overflow-hidden">
       {/* Background Grid & Aurora Glow */}
       <motion.div className="absolute inset-0 bg-grid opacity-[0.12]" style={{ y: bgY }} />
       <div className="absolute inset-0 aurora-bg opacity-20 pointer-events-none" />

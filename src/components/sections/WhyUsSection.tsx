@@ -7,7 +7,7 @@ export default function WhyUsSection() {
   const { settings } = useWebsiteSettings();
   const reasons = parseJsonArray<WhyUsItem>(settings.why_us_items, DEFAULT_WHY_US);
   return (
-    <section id="why-us" className="relative py-8 md:py-14 overflow-hidden">
+    <section id="why-us" className="relative py-6 md:py-8 overflow-hidden">
       <div className="absolute inset-0 bg-dots opacity-15" />
       <div className="absolute inset-0 bg-gradient-to-b from-black via-black/97 to-black" />
 
