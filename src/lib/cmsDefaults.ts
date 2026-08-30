@@ -13,12 +13,12 @@ export type TechItem = {
 };
 
 export const DEFAULT_WHY_US: WhyUsItem[] = [
-  { icon: 'Palette', title: 'High-Impact UI/UX', desc: 'Captivating designs driving conversions through clarity and modern aesthetics.', color: '#00E5FF', badge: 'OPTIMIZED' },
-  { icon: 'Brain', title: 'AI-Powered Features', desc: 'Intelligent automation, personalization, and LLM integrations for a genuine edge.', color: '#8B5CF6', badge: 'LLM READY' },
-  { icon: 'Server', title: 'Scalable Architecture', desc: 'Built to handle high volume with zero downtime and total reliability.', color: '#00FFD1', badge: '99.99% UPTIME' },
-  { icon: 'Zap', title: 'Blazing Performance', desc: 'Sub-second load times, 95+ Lighthouse scores, and edge network optimizations.', color: '#F59E0B', badge: 'SUB-SECOND' },
-  { icon: 'Shield', title: 'Enterprise Security', desc: 'Encryption, access control, authentication, and compliance baked in from day one.', color: '#3B82F6', badge: 'BANK-GRADE' },
-  { icon: 'Smartphone', title: 'Mobile-First Design', desc: 'Pixel-perfect responsive experiences across phones, tablets, and wide displays.', color: '#EC4899', badge: 'RESPONSIVE' },
+  { icon: 'Palette', title: 'High-Impact UI/UX', desc: 'Clear layouts that help visitors understand the offer and take action.', color: '#00E5FF', badge: 'OPTIMIZED' },
+  { icon: 'Brain', title: 'AI-Powered Features', desc: 'Useful automation and assistants that save time, not extra noise.', color: '#8B5CF6', badge: 'LLM READY' },
+  { icon: 'Server', title: 'Scalable Architecture', desc: 'Built to stay stable as traffic and features grow.', color: '#00FFD1', badge: '99.99% UPTIME' },
+  { icon: 'Zap', title: 'Blazing Performance', desc: 'Fast first load on phones, so people stay instead of leaving.', color: '#F59E0B', badge: 'SUB-SECOND' },
+  { icon: 'Shield', title: 'Enterprise Security', desc: 'Access control and encryption from the start, not added later.', color: '#3B82F6', badge: 'BANK-GRADE' },
+  { icon: 'Smartphone', title: 'Mobile-First Design', desc: 'Designed for the phone first, then refined for larger screens.', color: '#EC4899', badge: 'RESPONSIVE' },
 ];
 
 export const DEFAULT_TECH_ROW1: TechItem[] = [

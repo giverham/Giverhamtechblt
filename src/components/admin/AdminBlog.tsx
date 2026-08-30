@@ -4,6 +4,7 @@ import { Plus, Pencil, Trash2, X, Check, Loader2, AlertTriangle, BookOpen, Clock
 import { supabase } from '@/lib/supabase';
 import ImageUpload from '@/components/admin/ImageUpload';
 import { BLOG_CATEGORIES } from '@/lib/cmsDefaults';
+import { KNOWLEDGE_HUB_ARTICLES, OLD_KNOWLEDGE_SLUGS } from '@/lib/knowledgeHub';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -134,6 +135,30 @@ export default function AdminBlog() {
 
   const fetchPosts = useCallback(async () => {
     setLoading(true);
+    const { data: existing } = await supabase.from('blog_posts').select('slug,content');
+    const rows = existing ?? [];
+    for (const article of KNOWLEDGE_HUB_ARTICLES) {
+      const found = rows.find((row) => row.slug === article.slug);
+      const payload = {
+        title: article.title,
+        slug: article.slug,
+        excerpt: article.excerpt,
+        content: article.content,
+        cover_image_url: article.cover_image_url,
+        category: article.category,
+        tags: article.tags,
+        author: article.author,
+        reading_time: article.reading_time,
+        published: true,
+        featured: article.featured,
+      };
+      if (!found) await supabase.from('blog_posts').insert(payload);
+      else if (!found.content) await supabase.from('blog_posts').update(payload).eq('slug', article.slug);
+    }
+    if (rows.some((row) => OLD_KNOWLEDGE_SLUGS.includes(row.slug))) {
+      await supabase.from('blog_posts').update({ published: false }).in('slug', OLD_KNOWLEDGE_SLUGS);
+    }
+
     const { data, error } = await supabase
       .from('blog_posts')
       .select('*')
