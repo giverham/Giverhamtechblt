@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
-import { Clock, ArrowRight, Tag } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ArrowRight, Tag, X } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { useWebsiteSettings } from '@/hooks/useWebsiteSettings';
 import { BLOG_CATEGORIES } from '@/lib/cmsDefaults';
@@ -12,7 +12,7 @@ interface BlogPost {
   excerpt: string;
   category: string;
   cover_image_url: string;
-  reading_time: number;
+  content: string;
   created_at: string;
   featured: boolean;
 }
@@ -33,12 +33,13 @@ export default function BlogSection() {
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [activeCategory, setActiveCategory] = useState('All');
   const [loading, setLoading] = useState(true);
+  const [openPost, setOpenPost] = useState<BlogPost | null>(null);
 
   useEffect(() => {
     const load = () => {
       supabase
         .from('blog_posts')
-        .select('id, title, slug, excerpt, category, cover_image_url, reading_time, created_at, featured')
+        .select('id, title, slug, excerpt, content, category, cover_image_url, created_at, featured')
         .eq('published', true)
         .order('created_at', { ascending: false })
         .limit(6)
@@ -54,6 +55,13 @@ export default function BlogSection() {
       .subscribe();
     return () => { supabase.removeChannel(channel); };
   }, []);
+
+  useEffect(() => {
+    if (!openPost) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setOpenPost(null); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [openPost]);
 
   const filtered = activeCategory === 'All' ? posts : posts.filter(p => p.category === activeCategory);
 
@@ -110,6 +118,10 @@ export default function BlogSection() {
               return (
                 <motion.article
                   key={post.id}
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => setOpenPost(post)}
+                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setOpenPost(post); } }}
                   initial={{ opacity: 0, y: 24 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
@@ -152,12 +164,7 @@ export default function BlogSection() {
                     </div>
                   </div>
 
-                  {/* Card Footer Metadata */}
-                  <div className="px-2.5 pb-2.5 sm:px-4 sm:pb-4 md:px-5 md:pb-5 pt-0 flex items-center justify-between border-t border-white/5 sm:border-t-0 pt-2 sm:pt-0">
-                    <div className="flex items-center gap-1 text-[9px] sm:text-[11px] text-gray-500">
-                      <Clock size={10} className="sm:w-[11px] sm:h-[11px]" />
-                      <span>{post.reading_time} min</span>
-                    </div>
+                  <div className="px-2.5 pb-2.5 sm:px-4 sm:pb-4 md:px-5 md:pb-5 pt-2 sm:pt-0 flex items-center justify-end">
                     <div className="flex items-center gap-0.5 sm:gap-1 text-[10px] sm:text-xs font-medium transition-all duration-200 group-hover:gap-1.5"
                       style={{ color }}>
                       Read <ArrowRight size={11} className="sm:w-[12px] sm:h-[12px]" />
@@ -173,6 +180,52 @@ export default function BlogSection() {
           </div>
         )}
       </div>
+
+      <AnimatePresence>
+        {openPost && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[80] flex items-end sm:items-center justify-center px-3 sm:px-6 py-4"
+            style={{ background: 'rgba(0,0,0,0.82)', backdropFilter: 'blur(12px)' }}
+            onClick={(e) => { if (e.target === e.currentTarget) setOpenPost(null); }}
+          >
+            <motion.div
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 24 }}
+              className="w-full max-w-2xl max-h-[86vh] overflow-y-auto rounded-2xl border border-white/10 bg-black p-4 sm:p-6"
+            >
+              <div className="flex items-start justify-between gap-3 mb-4">
+                <div>
+                  <p className="text-[10px] font-semibold uppercase tracking-wider mb-1" style={{ color: categoryColors[openPost.category] || '#00E5FF' }}>
+                    {openPost.category}
+                  </p>
+                  <h3 className="text-lg sm:text-2xl font-bold text-white leading-snug">{openPost.title}</h3>
+                </div>
+                <button
+                  type="button"
+                  aria-label="Close article"
+                  onClick={() => setOpenPost(null)}
+                  className="shrink-0 w-9 h-9 rounded-xl border border-white/10 text-gray-400 hover:text-white"
+                >
+                  <X size={16} className="mx-auto" />
+                </button>
+              </div>
+              {openPost.cover_image_url && (
+                <img src={openPost.cover_image_url} alt={openPost.title} className="w-full max-h-56 object-cover rounded-xl mb-4" />
+              )}
+              {openPost.excerpt && (
+                <p className="text-sm text-gray-300 leading-relaxed mb-4">{openPost.excerpt}</p>
+              )}
+              <div className="text-sm text-gray-400 leading-relaxed whitespace-pre-wrap">
+                {openPost.content || 'This post does not have full details yet.'}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
 }
