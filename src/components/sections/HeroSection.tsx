@@ -372,7 +372,13 @@ export default function HeroSection() {
   }, []);
 
   return (
-    <section ref={sectionRef} className="relative w-full h-[100svh] max-h-[100svh] sm:h-auto sm:max-h-none sm:min-h-screen flex items-center justify-center overflow-hidden bg-black scanlines py-0 sm:py-12">
+    <section ref={sectionRef} className="relative w-full min-h-0 sm:min-h-screen flex items-center justify-center overflow-hidden bg-black scanlines py-0 sm:py-12">
+      {/* Mobile only: give the hero real height so it ends after the cards, not at 100vh */}
+      <div
+        className="sm:hidden w-full shrink-0 pointer-events-none"
+        style={{ height: 'calc(min(74vw, 40svh) + 15.65rem)' }}
+        aria-hidden
+      />
 
       {/* 3D Canvas — mobile: framed under the top line so it does not fill the whole phone */}
       <div className="absolute z-0 pointer-events-none overflow-hidden left-1/2 -translate-x-1/2 top-[6.5rem] w-[min(74vw,40svh)] aspect-square sm:inset-0 sm:left-0 sm:right-0 sm:top-0 sm:bottom-0 sm:w-auto sm:h-auto sm:max-w-none sm:aspect-auto sm:translate-x-0 sm:overflow-visible">
