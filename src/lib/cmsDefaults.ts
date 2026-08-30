@@ -45,6 +45,62 @@ export const DEFAULT_TECH_ROW2: TechItem[] = [
 
 export const DEFAULT_FOOTER_COMPANY = ['About Us', 'Blog', 'Projects', 'Testimonials', 'Contact'];
 
+export const DEFAULT_PRIVACY_TITLE = 'Privacy Policy';
+export const DEFAULT_TERMS_TITLE = 'Terms of Service';
+export const DEFAULT_LEGAL_UPDATED = '30 August 2026';
+
+export const DEFAULT_PRIVACY_BODY = `{company} ("we", "us", or "our") respects your privacy. This policy explains what information we collect when you visit giverham.com or contact us, how we use it, and the choices you have.
+
+## Information we collect
+
+If you send a message through our contact form, we collect the details you choose to share, such as your name, email address, phone number, and project notes. If you email or message us directly, we also keep that correspondence so we can reply and manage your request.
+
+## How we use it
+
+We use your information only to respond to enquiries, discuss possible work, deliver services you ask for, and keep a record of our conversation. We do not sell your information and we do not use it for unrelated advertising.
+
+## Sharing
+
+We may share information with trusted operators who help us run email, hosting, or communication tools, and only as needed to provide those services. We may also disclose information if the law requires it.
+
+## Retention
+
+We keep enquiry records for as long as needed to complete your request and to maintain a reasonable business record. You may ask us to update or delete your details at any time.
+
+## Your rights
+
+You may request access to the personal information we hold about you, ask us to correct it, or ask us to delete it, subject to any legal duty to retain records.
+
+## Contact
+
+For privacy questions, email us at {email}.`;
+
+export const DEFAULT_TERMS_BODY = `These terms govern your use of the {company} website and any enquiry you send through it. By using giverham.com, you agree to this notice.
+
+## Our work
+
+{company} designs and builds digital products for clients. Information on this website describes our capabilities and selected work. Sending an enquiry does not create a paid engagement. A project begins only when both sides agree in writing, including scope, timeline, and fees.
+
+## Website use
+
+You may browse this site for information about our studio. You may not copy the site, scrape it, or use it in a way that harms its security or availability. Project names and visuals remain the property of {company} or the relevant client.
+
+## Enquiries
+
+When you contact us, you confirm that the details you share are accurate and that you are allowed to send them. We will use that information to reply and, if we work together, to deliver the agreed service.
+
+## Limitation
+
+This website is provided as a public introduction to our studio. We do not warrant that it will always be uninterrupted. To the fullest extent allowed by law, {company} is not liable for losses that arise only from browsing or relying on general information on this site.
+
+## Changes
+
+We may update these terms as our studio grows. The date at the top of this page shows the latest version.
+
+## Contact
+
+Questions about these terms can be sent to {email}.`;
+
 export const BLOG_CATEGORIES = ['Web Development', 'AI Development', 'UI/UX', 'Business Growth', 'Technology', 'Deployment', 'Design', 'Business', 'AI/ML', 'Case Study'];
 
 export function parseJsonArray<T>(raw: string, fallback: T[]): T[] {

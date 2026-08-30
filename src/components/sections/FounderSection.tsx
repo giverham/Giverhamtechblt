@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion, useInView, useScroll, useTransform } from 'framer-motion';
-import { supabase } from '@/lib/supabase';
+import { useWebsiteSettings } from '@/hooks/useWebsiteSettings';
 
 const roles = [
   { label: 'Giverham Tech', color: '#00E5FF' },
@@ -22,31 +22,16 @@ export default function FounderSection() {
   const inView = useInView(sectionRef, { once: true, amount: 0.15 });
 
   const [imgError, setImgError] = useState(false);
-  const [founder, setFounder] = useState(FALLBACK);
+  const { settings } = useWebsiteSettings();
+  const founder = {
+    founder_name: settings.founder_name || FALLBACK.founder_name,
+    founder_title: settings.founder_title || FALLBACK.founder_title,
+    founder_bio: settings.founder_bio || FALLBACK.founder_bio,
+    founder_photo_url: settings.founder_photo_url || FALLBACK.founder_photo_url,
+  };
 
-  useEffect(() => {
-    const load = async () => {
-      const { data } = await supabase.from('website_settings').select('key,value').in('key', Object.keys(FALLBACK));
-      if (!data?.length) return;
-      const next = { ...FALLBACK };
-      data.forEach((row: { key: string; value: string }) => {
-        if (row.key in next && row.value) {
-          (next as Record<string, string>)[row.key] = row.value;
-        }
-      });
-      setFounder(next);
-      setImgError(false);
-    };
-
-    load();
-    const channel = supabase
-      .channel('founder-settings-live')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'website_settings' }, () => { load(); })
-      .subscribe();
-    return () => { supabase.removeChannel(channel); };
-  }, []);
-
-  const founderPhotoUrl = founder.founder_photo_url; 
+  const founderPhotoUrl = founder.founder_photo_url;
+  useEffect(() => { setImgError(false); }, [founderPhotoUrl]); 
 
   return (
     <section ref={sectionRef} id="about" className="relative py-5 sm:py-7 md:py-8 overflow-hidden">

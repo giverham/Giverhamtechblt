@@ -8,20 +8,6 @@ import { hideBuildToolItems } from '@/lib/publicCopy';
 
 interface Service { id: string; title: string; description: string; icon: string; features: string[]; }
 
-const fallbackServices: Service[] = [
-  { id: '1',  title: 'Website Development',   description: 'Stunning, high-performance websites built with cutting-edge technologies that convert visitors into customers.', icon: 'Globe',        features: ['Responsive Design', 'SEO Optimized', 'Fast Loading'] },
-  { id: '2',  title: 'Full Stack Development', description: 'End-to-end application development from database architecture to pixel-perfect interfaces.',                    icon: 'Code2',        features: ['React & Node.js', 'Database Design', 'API Development'] },
-  { id: '3',  title: 'AI Integration',         description: 'Supercharge your business with intelligent AI features — chatbots, recommendations, automation.',               icon: 'Brain',        features: ['OpenAI Integration', 'Automation', 'Chatbots'] },
-  { id: '4',  title: 'Business Websites',      description: 'Professional websites that establish authority and drive real business results.',                               icon: 'Briefcase',    features: ['Brand Identity', 'Lead Generation', 'Analytics'] },
-  { id: '5',  title: 'E-Commerce',             description: 'Powerful online stores with seamless checkout, inventory management, and payment gateways.',                   icon: 'ShoppingCart', features: ['Payment Integration', 'Inventory', 'Analytics'] },
-  { id: '6',  title: 'Real Estate Platforms',  description: 'Feature-rich property listing platforms with advanced search, maps, and virtual tours.',                       icon: 'Building2',    features: ['Property Listings', 'Map Integration', 'Virtual Tours'] },
-  { id: '7',  title: 'Banking Systems',        description: 'Secure, compliant fintech applications with real-time transactions and fraud detection.',                      icon: 'Landmark',     features: ['Secure Transactions', 'KYC/AML', 'Compliance'] },
-  { id: '8',  title: 'SaaS Applications',      description: 'Scalable software-as-a-service products with multi-tenancy, billing, and analytics.',                          icon: 'Layers',       features: ['Multi-tenancy', 'Subscription Billing', 'Analytics'] },
-  { id: '9',  title: 'Backend Development',    description: 'Secure backends with authentication, real-time data, and reliable database design.',                           icon: 'Database',     features: ['Auth Systems', 'Real-time Data', 'API Design'] },
-  { id: '10', title: 'API Integration',        description: 'Seamlessly connect third-party services — payments, communications, data providers.',                          icon: 'Plug',         features: ['REST & GraphQL', 'Webhook Handling', 'Documentation'] },
-  { id: '11', title: 'Cloud Deployment',       description: 'Fast, reliable launches with automated delivery and performance monitoring.',                                  icon: 'Zap',          features: ['CI/CD Pipeline', 'Global Delivery', 'Analytics'] },
-  { id: '12', title: 'Website Maintenance',    description: 'Ongoing support, updates, security patches, and performance optimization for your platform.',                  icon: 'Wrench',       features: ['Security Updates', 'Performance Tuning', '24/7 Monitoring'] },
-];
 
 const CARD_GRADIENTS = [
   ['rgba(0,229,255,0.12)', 'rgba(0,255,209,0.06)'],
@@ -128,13 +114,13 @@ function TiltCard({ service, index }: { service: Service; index: number }) {
 
 export default function ServicesSection() {
   const { settings } = useWebsiteSettings();
-  const [services, setServices] = useState<Service[]>(hideBuildToolItems(fallbackServices));
+  const [services, setServices] = useState<Service[]>([]);
   const { head: servicesHead, tail: servicesTail } = splitAccentTitle(settings.services_title);
 
   useEffect(() => {
     const load = () => {
       supabase.from('services').select('*').eq('published', true).order('sort_order').then(({ data }) => {
-        if (data && data.length > 0) setServices(hideBuildToolItems(data));
+        setServices(hideBuildToolItems(data || []));
       });
     };
     load();

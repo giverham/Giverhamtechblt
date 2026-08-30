@@ -1,6 +1,15 @@
 import { useCallback, useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
-import { DEFAULT_TECH_ROW1, DEFAULT_TECH_ROW2, DEFAULT_WHY_US } from '@/lib/cmsDefaults';
+import {
+  DEFAULT_LEGAL_UPDATED,
+  DEFAULT_PRIVACY_BODY,
+  DEFAULT_PRIVACY_TITLE,
+  DEFAULT_TECH_ROW1,
+  DEFAULT_TECH_ROW2,
+  DEFAULT_TERMS_BODY,
+  DEFAULT_TERMS_TITLE,
+  DEFAULT_WHY_US,
+} from '@/lib/cmsDefaults';
 
 export const DEFAULT_SITE_SETTINGS: Record<string, string> = {
   site_name: 'GIVERHAM TECH',
@@ -43,6 +52,12 @@ export const DEFAULT_SITE_SETTINGS: Record<string, string> = {
   tech_stack_row1: JSON.stringify(DEFAULT_TECH_ROW1),
   tech_stack_row2: JSON.stringify(DEFAULT_TECH_ROW2),
   footer_company: 'About Us,Blog,Projects,Testimonials,Contact',
+  privacy_title: DEFAULT_PRIVACY_TITLE,
+  privacy_updated: DEFAULT_LEGAL_UPDATED,
+  privacy_body: DEFAULT_PRIVACY_BODY,
+  terms_title: DEFAULT_TERMS_TITLE,
+  terms_updated: DEFAULT_LEGAL_UPDATED,
+  terms_body: DEFAULT_TERMS_BODY,
 };
 
 const SETTINGS_CACHE_KEY = 'giverham_website_settings';

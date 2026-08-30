@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Settings, Save, Check, AlertTriangle, Loader2, Globe, Share2, BarChart2, Type, FileText } from 'lucide-react';
+import { Settings, Save, Check, AlertTriangle, Loader2, Globe, Share2, Type, FileText, Scale } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import ImageUpload from '@/components/admin/ImageUpload';
 import { applySettingsPatch, DEFAULT_SITE_SETTINGS } from '@/hooks/useWebsiteSettings';
@@ -62,11 +62,18 @@ const GROUPS: SettingsGroup[] = [
     ],
   },
   {
-    id: 'stats',
-    title: 'Stats & Numbers',
-    icon: <BarChart2 size={16} className="text-emerald-400" />,
-    description: 'Headline stats shown on the website.',
-    keys: ['stats_projects', 'stats_technologies', 'stats_clients', 'stats_years'],
+    id: 'legal',
+    title: 'Privacy & Terms',
+    icon: <Scale size={16} className="text-emerald-400" />,
+    description: 'These pages update on the live website immediately after save. Use ## for a section title.',
+    keys: [
+      'privacy_title',
+      'privacy_updated',
+      'privacy_body',
+      'terms_title',
+      'terms_updated',
+      'terms_body',
+    ],
   },
 ];
 
@@ -100,10 +107,12 @@ const DEFAULT_LABELS: Record<string, { label: string; type: Setting['type']; hin
   contact_label: { label: 'Contact Label', type: 'text' },
   contact_title: { label: 'Contact Heading', type: 'textarea' },
   contact_description: { label: 'Contact Description', type: 'textarea' },
-  stats_projects: { label: 'Projects Completed', type: 'number' },
-  stats_technologies: { label: 'Technologies Used', type: 'number' },
-  stats_clients: { label: 'Happy Clients', type: 'number' },
-  stats_years: { label: 'Years Experience', type: 'number' },
+  privacy_title: { label: 'Privacy Policy Title', type: 'text' },
+  privacy_updated: { label: 'Privacy Last Updated', type: 'text' },
+  privacy_body: { label: 'Privacy Policy', type: 'textarea', hint: 'Use ## for section titles. {company} and {email} are filled from Site & Contact.' },
+  terms_title: { label: 'Terms of Service Title', type: 'text' },
+  terms_updated: { label: 'Terms Last Updated', type: 'text' },
+  terms_body: { label: 'Terms of Service', type: 'textarea', hint: 'Use ## for section titles. {company} and {email} are filled from Site & Contact.' },
 };
 
 // ─── Toast ────────────────────────────────────────────────────────────────────
@@ -170,6 +179,24 @@ export default function AdminSettings() {
       if (!values.phone && values.phone_number) values.phone = values.phone_number;
       if (!values.logo_url && values.site_logo_url) values.logo_url = values.site_logo_url;
       if (!values.favicon_url && values.site_favicon_url) values.favicon_url = values.site_favicon_url;
+
+      const legalKeys = ['privacy_title', 'privacy_updated', 'privacy_body', 'terms_title', 'terms_updated', 'terms_body'];
+      const missingLegal = legalKeys.filter((key) => !((data ?? []).some((row: { key: string; value: string }) => row.key === key && row.value)));
+      if (missingLegal.length) {
+        const seeded: Record<string, string> = {};
+        for (const key of missingLegal) {
+          const value = DEFAULT_SITE_SETTINGS[key] || '';
+          await supabase.from('website_settings').upsert({
+            key,
+            value,
+            label: DEFAULT_LABELS[key]?.label || key,
+            type: DEFAULT_LABELS[key]?.type || 'textarea',
+          }, { onConflict: 'key' });
+          values[key] = value;
+          seeded[key] = value;
+        }
+        applySettingsPatch(seeded);
+      }
 
       setSettings(map);
       setLocalValues(values);
@@ -319,6 +346,7 @@ export default function AdminSettings() {
                   if (!meta) return null;
                   const hint = DEFAULT_LABELS[key]?.hint;
                   const wide = meta.type === 'textarea' || meta.type === 'image' || key === 'footer_bio' || key === 'footer_company';
+                  const tallLegal = key === 'privacy_body' || key === 'terms_body';
                   return (
                     <div key={key} className={wide ? 'sm:col-span-2' : ''}>
                       <label className={labelCls}>{meta.label}</label>
@@ -331,7 +359,7 @@ export default function AdminSettings() {
                         />
                       ) : meta.type === 'textarea' ? (
                         <textarea
-                          className={`${inputCls} min-h-[88px]`}
+                          className={`${inputCls} ${tallLegal ? 'min-h-[260px]' : 'min-h-[88px]'}`}
                           value={localValues[key] ?? ''}
                           onChange={(e) => handleChange(key, e.target.value)}
                           placeholder={`Enter ${meta.label.toLowerCase()}...`}

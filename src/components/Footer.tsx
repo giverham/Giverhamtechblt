@@ -69,7 +69,7 @@ export default function Footer() {
   };
 
   const footerColumns = [
-    { title: 'Services', links: serviceTitles.length ? serviceTitles.slice(0, 6) : ['Website Development', 'Full Stack Development', 'AI Integration', 'E-Commerce', 'Banking Systems', 'SaaS Applications'], onClick: handleServiceClick },
+    { title: 'Services', links: serviceTitles.slice(0, 6), onClick: handleServiceClick },
     { title: 'Company', links: company, onClick: handleCompanyClick },
   ];
 

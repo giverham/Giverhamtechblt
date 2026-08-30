@@ -17,13 +17,6 @@ interface Project {
   case_study_url: string;
 }
 
-const fallbackProjects: Project[] = [
-  { id: '1', title: 'Evercrest Bank', subtitle: 'Digital Banking Infrastructure', description: 'Next-generation digital banking platform built with real-time transaction processing, automated KYC verification, and enterprise-grade AI fraud detection.', features: ['Real-time Transactions', 'KYC/AML Compliance', 'AI Fraud Detection', 'Multi-currency Wallet'], tech_stack: ['React', 'TypeScript', 'Node.js', 'PostgreSQL', 'Stripe'], category: 'Banking', image_url: 'https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=1200&q=80', live_url: '#', case_study_url: '#' },
-  { id: '2', title: 'RR Rentals', subtitle: 'Luxury Vehicle & Property Platform', description: 'Premium real estate ecosystem featuring property listings, interactive 3D virtual tours, custom map filters, and automated tenant lease management.', features: ['Interactive Property Map', 'Virtual 3D Tours', 'Automated Leases', 'Tenant Portal'], tech_stack: ['React', 'TypeScript', 'PostgreSQL', 'Mapbox', 'Next.js'], category: 'Real Estate', image_url: 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=1200&q=80', live_url: '#', case_study_url: '#' },
-  { id: '3', title: 'MarWiz Storefront', subtitle: 'Luxury Brand Storefront', description: 'Luxury e-commerce experience for high-end fashion and horology with AR virtual try-on, AI sizing guides, and automated inventory sync.', features: ['AR Virtual Try-On', 'AI Sizing Assistant', 'Real-time Inventory', 'Multi-currency Checkout'], tech_stack: ['React', 'TypeScript', 'PostgreSQL', 'Stripe', 'Three.js'], category: 'E-Commerce', image_url: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1200&q=80', live_url: '#', case_study_url: '#' },
-  { id: '4', title: 'Giver Studio', subtitle: 'Media & Recording Ecosystem', description: 'State-of-the-art studio management software with interactive session scheduling, real-time artist collaboration, audio stem streaming, and automated invoicing.', features: ['Session Scheduling', 'Real-time Audio Previews', 'Artist Collaboration', 'Automated Billing'], tech_stack: ['React', 'TypeScript', 'PostgreSQL', 'WebRTC', 'Stripe'], category: 'Entertainment', image_url: 'https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&w=1200&q=80', live_url: '#', case_study_url: '#' },
-  { id: '5', title: 'AI Sport Analyst', subtitle: 'Machine Learning Analytics Engine', description: 'Intelligent sports analytics engine delivering predictive match algorithms, real-time player data telemetry, and fantasy draft recommendations.', features: ['Predictive Match AI', 'Player Performance Telemetry', 'Fantasy Draft AI', 'Live Game Stream'], tech_stack: ['React', 'TypeScript', 'OpenAI', 'PostgreSQL', 'Python'], category: 'AI / ML', image_url: 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=1200&q=80', live_url: '#', case_study_url: '#' },
-];
 
 const CATEGORY_CONFIG: Record<string, { color: string; bg: string }> = {
   Banking:       { color: '#3B82F6', bg: 'rgba(59,130,246,0.12)' },
@@ -34,20 +27,18 @@ const CATEGORY_CONFIG: Record<string, { color: string; bg: string }> = {
 };
 
 export default function ProjectsSection() {
-  const [projects, setProjects] = useState<Project[]>(fallbackProjects);
+  const [projects, setProjects] = useState<Project[]>([]);
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [active, setActive] = useState(0);
 
   useEffect(() => {
     const load = () => {
       supabase.from('projects').select('*').eq('published', true).order('sort_order').then(({ data }) => {
-        if (data && data.length > 0) {
-          setProjects(data.map(p => ({
-            ...p,
-            subtitle: p.subtitle || fallbackProjects.find(fb => fb.title === p.title)?.subtitle || 'Digital Enterprise Platform',
-            tech_stack: hideBuildToolLabels(p.tech_stack || []),
-          })));
-        }
+        setProjects((data || []).map(p => ({
+          ...p,
+          subtitle: p.subtitle || '',
+          tech_stack: hideBuildToolLabels(p.tech_stack || []),
+        })));
       });
     };
 
@@ -71,8 +62,8 @@ export default function ProjectsSection() {
   });
 
   const displayProjects = filteredProjects.length > 0 ? filteredProjects : projects;
-  const currentProject = displayProjects[active % displayProjects.length] || displayProjects[0] || fallbackProjects[0];
-  const cfg = CATEGORY_CONFIG[currentProject.category] || { color: '#00E5FF', bg: 'rgba(0,229,255,0.1)' };
+  const currentProject = displayProjects[active % (displayProjects.length || 1)] || displayProjects[0];
+  const cfg = CATEGORY_CONFIG[currentProject?.category] || { color: '#00E5FF', bg: 'rgba(0,229,255,0.1)' };
 
   return (
     <section id="projects" className="relative py-6 md:py-8 overflow-hidden">
@@ -174,7 +165,7 @@ export default function ProjectsSection() {
         </div>
 
         {/* Desktop Main Showcase Layout (hidden md:block) */}
-        <div className="hidden md:grid lg:grid-cols-12 gap-6 lg:gap-8 items-center glass p-6 sm:p-8 rounded-3xl border border-white/10"
+        {currentProject && <div className="hidden md:grid lg:grid-cols-12 gap-6 lg:gap-8 items-center glass p-6 sm:p-8 rounded-3xl border border-white/10"
           style={{ background: 'rgba(5,5,8,0.75)', backdropFilter: 'blur(20px)' }}>
 
           {/* Left Column: Image Preview */}
@@ -289,7 +280,7 @@ export default function ProjectsSection() {
             </AnimatePresence>
           </div>
 
-        </div>
+        </div>}
 
       </div>
     </section>

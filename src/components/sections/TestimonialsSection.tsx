@@ -6,17 +6,9 @@ import { useWebsiteSettings } from '@/hooks/useWebsiteSettings';
 
 interface Testimonial { id: string; name: string; role: string; company: string; content: string; rating: number; }
 
-const fallback: Testimonial[] = [
-  { id: '1', name: 'Sarah Mitchell', role: 'CEO',             company: 'Evercrest Financial', content: 'Giverham Tech delivered our banking platform ahead of schedule. The quality of code, security architecture, and UI design are absolutely world-class. Our users love the experience.', rating: 5 },
-  { id: '2', name: 'Marcus Johnson', role: 'Founder',         company: 'RR Rentals Ltd',       content: 'The real estate platform they built completely transformed our business. We went from a basic website to a full property management ecosystem in just 8 weeks. Unbelievable speed and quality.', rating: 5 },
-  { id: '3', name: 'Amara Okafor',   role: 'Director',        company: 'MarWiz Fashion',        content: 'The e-commerce site they built has increased our conversions by 340%. The design is stunning, performance is incredible, and the backend is rock solid. Best investment we made.', rating: 5 },
-  { id: '4', name: 'David Chen',     role: 'CTO',             company: 'TechFlow Solutions',    content: 'Working with Adelaja and his team was exceptional. They understood our technical requirements perfectly and delivered a SaaS platform that scales beautifully under load.', rating: 5 },
-  { id: '5', name: 'Priya Sharma',   role: 'Product Manager', company: 'AI Ventures',           content: 'The AI sports analyst platform exceeded every expectation. Machine learning integration, the UI, and the API documentation are all outstanding. A genuine engineering masterpiece.', rating: 5 },
-];
-
 export default function TestimonialsSection() {
   const { settings } = useWebsiteSettings();
-  const [testimonials, setTestimonials] = useState<Testimonial[]>(fallback);
+  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const [active, setActive] = useState(0);
   const [dir, setDir] = useState(1);
   const timer = useRef<ReturnType<typeof setInterval>>();
@@ -24,7 +16,7 @@ export default function TestimonialsSection() {
   useEffect(() => {
     const load = () => {
       supabase.from('testimonials').select('*').eq('published', true).order('sort_order').then(({ data }) => {
-        if (data && data.length > 0) setTestimonials(data);
+        setTestimonials(data || []);
       });
     };
     load();
@@ -43,7 +35,11 @@ export default function TestimonialsSection() {
     }, 6000);
   };
 
-  useEffect(() => { startTimer(); return () => clearInterval(timer.current); }, [testimonials.length]);
+  useEffect(() => {
+    if (!testimonials.length) return;
+    startTimer();
+    return () => clearInterval(timer.current);
+  }, [testimonials.length]);
 
   const go = (i: number) => {
     setDir(i > active ? 1 : -1);
@@ -80,8 +76,7 @@ export default function TestimonialsSection() {
           >{settings.testimonials_heading}</motion.div>
         </div>
 
-        {/* Testimonial Card Container */}
-        <div className="relative max-w-3xl mx-auto min-h-0 sm:min-h-[200px]">
+        {!current ? null : <div className="relative max-w-3xl mx-auto min-h-0 sm:min-h-[200px]">
           {/* Subtle background stack cards — desktop only */}
           {[-1, 1].map(offset => {
             const idx = (active + offset + testimonials.length) % testimonials.length;
@@ -142,10 +137,10 @@ export default function TestimonialsSection() {
                 style={{ borderBottom: '1px solid rgba(0,229,255,0.25)', borderRight: '1px solid rgba(0,229,255,0.25)' }} />
             </motion.div>
           </AnimatePresence>
-        </div>
+        </div>}
 
         {/* Navigation Controls & Centered Dots */}
-        <div className="flex items-center justify-center gap-3 sm:gap-4 mt-3 sm:mt-5">
+        {current && <div className="flex items-center justify-center gap-3 sm:gap-4 mt-3 sm:mt-5">
           <button onClick={prev}
             aria-label="Previous testimonial"
             className="w-8 h-8 sm:w-9 sm:h-9 rounded-full glass border-glow flex items-center justify-center hover:border-cyan-400/40 transition-all duration-200 hover:scale-105">
@@ -172,7 +167,7 @@ export default function TestimonialsSection() {
             className="w-8 h-8 sm:w-9 sm:h-9 rounded-full glass border-glow flex items-center justify-center hover:border-cyan-400/40 transition-all duration-200 hover:scale-105">
             <ChevronRight size={15} className="text-gray-400 sm:w-[16px] sm:h-[16px]" />
           </button>
-        </div>
+        </div>}
 
       </div>
     </section>
