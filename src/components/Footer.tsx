@@ -21,7 +21,7 @@ export default function Footer() {
   const { settings } = useWebsiteSettings();
   const [serviceTitles, setServiceTitles] = useState<string[]>([]);
   const { head: brandHead, tail: brandTail } = splitAccentTitle(settings.site_name || 'GIVERHAM TECH');
-  const logoUrl = settings.logo_url || settings.site_logo_url || '/logo.svg';
+  const logoUrl = settings.logo_url || settings.site_logo_url || '';
   const companyLinks = (settings.footer_company || '')
     .split(',')
     .map((item) => item.trim())
@@ -100,7 +100,9 @@ export default function Footer() {
               transition={{ type: 'spring', stiffness: 400 }}
             >
               <div className="w-9 h-9 rounded-xl flex items-center justify-center overflow-hidden">
-                <img src={logoUrl} alt={`${settings.site_name || 'Giverham Tech'} Logo`} className="w-full h-full object-contain" />
+                {logoUrl ? (
+                  <img key={logoUrl} src={logoUrl} alt={`${settings.site_name || 'Giverham Tech'} Logo`} className="w-full h-full object-contain" />
+                ) : null}
               </div>
               <div>
                 <span className="font-black text-white text-xl tracking-tight">{brandHead}</span>

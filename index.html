@@ -4,6 +4,24 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/logo.svg" />
+    <script>
+      (function () {
+        try {
+          var stored = JSON.parse(localStorage.getItem('giverham_website_settings') || '{}');
+          var favicon = stored.favicon_url || stored.site_favicon_url;
+          var logo = stored.logo_url || stored.site_logo_url;
+          if (favicon) {
+            var icon = document.querySelector('link[rel="icon"]');
+            if (icon) icon.href = favicon;
+            var apple = document.querySelector('link[rel="apple-touch-icon"]');
+            if (apple) apple.href = favicon;
+          } else if (logo) {
+            var fallback = document.querySelector('link[rel="icon"]');
+            if (fallback) fallback.href = logo;
+          }
+        } catch (e) {}
+      })();
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <title>Giverham Tech | Premium Websites &amp; AI Platforms</title>

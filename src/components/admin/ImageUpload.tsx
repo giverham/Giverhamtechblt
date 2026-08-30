@@ -7,9 +7,16 @@ interface ImageUploadProps {
   onChange: (url: string) => void;
   label?: string;
   bucket?: string;
+  accept?: string;
 }
 
-export default function ImageUpload({ value, onChange, label, bucket = 'media' }: ImageUploadProps) {
+export default function ImageUpload({
+  value,
+  onChange,
+  label,
+  bucket = 'media',
+  accept = 'image/png, image/jpeg, image/jpg, image/webp',
+}: ImageUploadProps) {
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -73,7 +80,7 @@ export default function ImageUpload({ value, onChange, label, bucket = 'media' }
           type="file" 
           ref={fileInputRef} 
           onChange={handleFileChange} 
-          accept="image/png, image/jpeg, image/jpg, image/webp" 
+          accept={accept} 
           className="hidden" 
         />
         

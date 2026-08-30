@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Settings, Save, Check, AlertTriangle, Loader2, Globe, Share2, BarChart2, Type, FileText } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import ImageUpload from '@/components/admin/ImageUpload';
-import { DEFAULT_SITE_SETTINGS } from '@/hooks/useWebsiteSettings';
+import { applySettingsPatch, DEFAULT_SITE_SETTINGS } from '@/hooks/useWebsiteSettings';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -30,7 +30,7 @@ const GROUPS: SettingsGroup[] = [
     title: 'Site & Contact',
     icon: <Globe size={16} className="text-cyan-400" />,
     description: 'These values appear on the live website immediately after save.',
-    keys: ['site_name', 'tagline', 'email', 'phone', 'whatsapp', 'logo_url', 'address'],
+    keys: ['site_name', 'tagline', 'email', 'phone', 'whatsapp', 'logo_url', 'favicon_url', 'address'],
   },
   {
     id: 'social',
@@ -80,6 +80,7 @@ const DEFAULT_LABELS: Record<string, { label: string; type: Setting['type']; hin
   address: { label: 'Address', type: 'text' },
   whatsapp: { label: 'WhatsApp Number', type: 'tel', hint: 'Full number with country code, e.g. +2348012345678. Do not paste only the digits without the country code unless it already includes 234.' },
   logo_url: { label: 'Site Logo', type: 'image' },
+  favicon_url: { label: 'Favicon', type: 'image', hint: 'Browser tab icon. Upload PNG, SVG, or ICO. It updates on the live site immediately after save.' },
   twitter: { label: 'Twitter / X URL', type: 'url' },
   instagram: { label: 'Instagram URL', type: 'url' },
   linkedin: { label: 'LinkedIn URL', type: 'url' },
@@ -168,6 +169,7 @@ export default function AdminSettings() {
 
       if (!values.phone && values.phone_number) values.phone = values.phone_number;
       if (!values.logo_url && values.site_logo_url) values.logo_url = values.site_logo_url;
+      if (!values.favicon_url && values.site_favicon_url) values.favicon_url = values.site_favicon_url;
 
       setSettings(map);
       setLocalValues(values);
@@ -191,6 +193,7 @@ export default function AdminSettings() {
     const aliasKeys: Record<string, string> = {
       phone: 'phone_number',
       logo_url: 'site_logo_url',
+      favicon_url: 'site_favicon_url',
     };
 
     for (const key of group.keys) {
@@ -224,6 +227,11 @@ export default function AdminSettings() {
       showToast(`Some settings failed to save.`, 'error');
     } else {
       showToast(`${group.title} saved successfully!`, 'success');
+      const patch: Record<string, string> = {};
+      group.keys.forEach((key) => { patch[key] = localValues[key] ?? ''; });
+      if (patch.logo_url) patch.site_logo_url = patch.logo_url;
+      if (patch.favicon_url) patch.site_favicon_url = patch.favicon_url;
+      applySettingsPatch(patch);
       fetchSettings();
     }
 
@@ -315,7 +323,12 @@ export default function AdminSettings() {
                     <div key={key} className={wide ? 'sm:col-span-2' : ''}>
                       <label className={labelCls}>{meta.label}</label>
                       {meta.type === 'image' ? (
-                        <ImageUpload value={localValues[key] ?? ''} onChange={(url) => handleChange(key, url)} label="Upload logo" />
+                        <ImageUpload
+                          value={localValues[key] ?? ''}
+                          onChange={(url) => handleChange(key, url)}
+                          label={key === 'favicon_url' ? 'Upload favicon' : 'Upload logo'}
+                          accept={key === 'favicon_url' ? 'image/png,image/jpeg,image/jpg,image/webp,image/svg+xml,image/x-icon,.ico' : undefined}
+                        />
                       ) : meta.type === 'textarea' ? (
                         <textarea
                           className={`${inputCls} min-h-[88px]`}

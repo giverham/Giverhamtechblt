@@ -21,7 +21,10 @@ export const DEFAULT_SITE_SETTINGS: Record<string, string> = {
   footer_bio: 'We engineer digital experiences that transform businesses. Premium websites, AI platforms, and custom software for the modern world.',
   engineered_by: 'Giverham Tech',
   copyright_text: '',
-  logo_url: '/logo.svg',
+  logo_url: '',
+  site_logo_url: '',
+  favicon_url: '',
+  site_favicon_url: '',
   founder_name: 'Adelaja Hassan M.',
   founder_title: 'Full Stack Developer & AI Engineer',
   founder_bio: 'I build premium digital products, AI-powered platforms, banking systems, e-commerce solutions, media platforms, and scalable business software designed for performance, reliability, and growth.',
@@ -42,16 +45,73 @@ export const DEFAULT_SITE_SETTINGS: Record<string, string> = {
   footer_company: 'About Us,Blog,Projects,Testimonials,Contact',
 };
 
-let cache = { ...DEFAULT_SITE_SETTINGS };
+const SETTINGS_CACHE_KEY = 'giverham_website_settings';
+
+function readLocalCache(): Record<string, string> {
+  if (typeof window === 'undefined') return { ...DEFAULT_SITE_SETTINGS };
+  try {
+    const raw = window.localStorage.getItem(SETTINGS_CACHE_KEY);
+    if (!raw) return { ...DEFAULT_SITE_SETTINGS };
+    const parsed = JSON.parse(raw) as Record<string, string>;
+    return normalizeBrandKeys({ ...DEFAULT_SITE_SETTINGS, ...parsed });
+  } catch {
+    return { ...DEFAULT_SITE_SETTINGS };
+  }
+}
+
+function writeLocalCache(next: Record<string, string>) {
+  if (typeof window === 'undefined') return;
+  try {
+    window.localStorage.setItem(SETTINGS_CACHE_KEY, JSON.stringify(next));
+  } catch {
+    /* ignore quota / private mode */
+  }
+}
+
+function normalizeBrandKeys(next: Record<string, string>) {
+  if (next.site_logo_url && !next.logo_url) next.logo_url = next.site_logo_url;
+  if (next.logo_url && !next.site_logo_url) next.site_logo_url = next.logo_url;
+  if (next.site_favicon_url && !next.favicon_url) next.favicon_url = next.site_favicon_url;
+  if (next.favicon_url && !next.site_favicon_url) next.site_favicon_url = next.favicon_url;
+  if (next.phone_number && !next.phone) next.phone = next.phone_number;
+  if (next.phone && !next.phone_number) next.phone_number = next.phone;
+  return next;
+}
+
+function applyBrandAssets(next: Record<string, string>) {
+  if (typeof document === 'undefined') return;
+  const favicon = next.favicon_url || next.site_favicon_url;
+  if (!favicon) return;
+  const setHref = (rel: string) => {
+    let link = document.querySelector<HTMLLinkElement>(`link[rel="${rel}"]`);
+    if (!link) {
+      link = document.createElement('link');
+      link.rel = rel;
+      document.head.appendChild(link);
+    }
+    if (link.href !== favicon) link.href = favicon;
+  };
+  setHref('icon');
+  setHref('shortcut icon');
+  setHref('apple-touch-icon');
+}
+
+let cache = readLocalCache();
 let loaded = false;
 let inflight: Promise<Record<string, string>> | null = null;
 const listeners = new Set<(settings: Record<string, string>) => void>();
 let realtimeReady = false;
 
 function publish(next: Record<string, string>) {
-  cache = next;
+  cache = normalizeBrandKeys(next);
   loaded = true;
-  listeners.forEach((fn) => fn(next));
+  writeLocalCache(cache);
+  applyBrandAssets(cache);
+  listeners.forEach((fn) => fn(cache));
+}
+
+export function applySettingsPatch(partial: Record<string, string>) {
+  publish(normalizeBrandKeys({ ...cache, ...partial }));
 }
 
 async function fetchSettings(): Promise<Record<string, string>> {
@@ -63,11 +123,7 @@ async function fetchSettings(): Promise<Record<string, string>> {
       (data ?? []).forEach((row: { key: string; value: string }) => {
         if (row.key && row.value != null && row.value !== '') next[row.key] = row.value;
       });
-      if (next.site_logo_url && !next.logo_url) next.logo_url = next.site_logo_url;
-      if (next.logo_url && !next.site_logo_url) next.site_logo_url = next.logo_url;
-      if (next.phone_number && !next.phone) next.phone = next.phone_number;
-      if (next.phone && !next.phone_number) next.phone_number = next.phone;
-      publish(next);
+      publish(normalizeBrandKeys(next));
       return next;
     } catch {
       return cache;
@@ -88,6 +144,11 @@ function ensureRealtime() {
       fetchSettings();
     })
     .subscribe();
+}
+
+if (typeof window !== 'undefined') {
+  applyBrandAssets(cache);
+  fetchSettings();
 }
 
 export function useWebsiteSettings() {

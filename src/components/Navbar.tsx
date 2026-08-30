@@ -18,7 +18,7 @@ export default function Navbar() {
   const [open, setOpen]         = useState(false);
   const [scrolled, setScrolled]   = useState(false);
   const { settings } = useWebsiteSettings();
-  const siteLogoUrl = settings.logo_url || settings.site_logo_url || '/logo.svg';
+  const siteLogoUrl = settings.logo_url || settings.site_logo_url || '';
   const { head: brandHead, tail: brandTail } = splitAccentTitle(settings.site_name || 'GIVERHAM TECH');
   const navigate                = useNavigate();
   const location                = useLocation();
@@ -80,7 +80,7 @@ export default function Navbar() {
                 transition={{ type: 'spring', stiffness: 400 }}
               >
                 {siteLogoUrl ? (
-                  <img src={siteLogoUrl} alt="Giverham Tech Logo" className="w-full h-full object-contain" />
+                  <img key={siteLogoUrl} src={siteLogoUrl} alt="Giverham Tech Logo" className="w-full h-full object-contain" />
                 ) : (
                   <Zap size={14} className="text-black sm:w-[16px] sm:h-[16px]" fill="currentColor" />
                 )}
