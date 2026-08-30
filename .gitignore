@@ -21,5 +21,9 @@ dist-ssr
 *.sln
 *.sw?
 .env
+.env.*
+!.env.example
+.cursor/
 .bolt
 .bolt/
+.supabase/
