@@ -1,4 +1,4 @@
-import { useEffect, useRef, useMemo, useState } from 'react';
+import { useEffect, useRef, useMemo, useState, type ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Canvas, useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
@@ -43,6 +43,25 @@ function Particles() {
       <pointsMaterial size={0.06} vertexColors transparent opacity={0.7} sizeAttenuation depthWrite={false} />
     </points>
   );
+}
+
+function mobileGlobeScale() {
+  if (typeof window === 'undefined' || window.innerWidth >= 640) return 1;
+  const aspect = window.innerWidth / Math.max(window.innerHeight, 1);
+  const visibleWidth = 2 * Math.tan((55 * Math.PI) / 360) * 12 * aspect;
+  const sphereDiameter = 8.6;
+  return Math.max(0.44, Math.min(0.55, (visibleWidth * 0.82) / sphereDiameter));
+}
+
+function MobileGlobeFit({ children }: { children: ReactNode }) {
+  const [scale, setScale] = useState(mobileGlobeScale);
+  useEffect(() => {
+    const update = () => setScale(mobileGlobeScale());
+    update();
+    window.addEventListener('resize', update);
+    return () => window.removeEventListener('resize', update);
+  }, []);
+  return <group scale={scale}>{children}</group>;
 }
 
 /* ── Wireframe Sphere ───────────────── */
@@ -165,7 +184,7 @@ function AnimatedHeadline() {
 
   return (
     <div className="flex flex-col items-center justify-center max-w-5xl mx-auto text-center w-full">
-      <div className="text-[11px] sm:text-base md:text-base lg:text-lg font-bold uppercase tracking-[0.16em] sm:tracking-wider text-white mb-3 sm:mb-2 flex flex-wrap justify-center gap-x-[0.35em] drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
+      <div className="text-[13px] sm:text-base md:text-base lg:text-lg font-black uppercase tracking-[0.14em] sm:tracking-wider text-white mb-8 sm:mb-2 -translate-y-8 sm:translate-y-0 flex flex-wrap justify-center gap-x-[0.35em] drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
         {line1.map((w, i) => (
           <motion.span key={i} className="inline-block" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 + i * 0.07, duration: 0.75, ease: [0.23, 1, 0.32, 1] }}>
             {w}
@@ -233,7 +252,7 @@ function FadingTextCycle() {
   }, [items.length]);
 
   return (
-    <div className="h-10 flex items-center justify-center mt-6">
+    <div className="h-10 flex items-center justify-center mt-10 sm:mt-0">
       <AnimatePresence mode="wait">
         <motion.div
           key={index}
@@ -241,7 +260,7 @@ function FadingTextCycle() {
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: -12, scale: 0.95 }}
           transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
-          className="text-cyan-300 font-mono font-extrabold text-[11px] tracking-[0.12em] uppercase text-center px-3 drop-shadow-[0_0_16px_rgba(0,229,255,1)]"
+          className="text-cyan-300 font-mono font-black text-[13px] tracking-[0.14em] uppercase text-center px-3 drop-shadow-[0_0_16px_rgba(0,229,255,1)]"
         >
           ✦ {items[index]} ✦
         </motion.div>
@@ -359,12 +378,14 @@ export default function HeroSection() {
           onCreated={({ gl }) => { gl.setClearColor(0x000000, 0); }}
         >
           <CameraParallax />
-          <Particles />
-          <WireframeSphere />
-          <OrbitalRing radius={5.2} speed={0.30} tilt={0.3} color={0x00e5ff} />
-          <OrbitalRing radius={6.6} speed={-0.20} tilt={1.1} color={0x00ffd1} />
-          <OrbitalRing radius={8.0} speed={0.15} tilt={0.7} color={0x3b82f6} />
-          <GridFloor />
+          <MobileGlobeFit>
+            <Particles />
+            <WireframeSphere />
+            <OrbitalRing radius={5.2} speed={0.30} tilt={0.3} color={0x00e5ff} />
+            <OrbitalRing radius={6.6} speed={-0.20} tilt={1.1} color={0x00ffd1} />
+            <OrbitalRing radius={8.0} speed={0.15} tilt={0.7} color={0x3b82f6} />
+            <GridFloor />
+          </MobileGlobeFit>
         </Canvas>
       </div>
 
