@@ -95,7 +95,7 @@ export default function Footer() {
                 navigate('/');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
-              className="flex items-center gap-2.5 mb-5 group"
+              className="flex items-center gap-2.5 mb-1.5 sm:mb-2 group"
               whileHover={{ x: 2 }}
               transition={{ type: 'spring', stiffness: 400 }}
             >
