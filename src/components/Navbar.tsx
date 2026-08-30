@@ -15,7 +15,7 @@ const navLinks = [
 export default function Navbar() {
   const [open, setOpen]         = useState(false);
   const [scrolled, setScrolled]   = useState(false);
-  const [siteLogoUrl, setSiteLogoUrl] = useState<string | null>(null);
+  const [siteLogoUrl, setSiteLogoUrl] = useState<string | null>('/logo.svg');
 
   const { scrollY } = useScroll();
   const navBg = useTransform(scrollY, [0, 80], ['rgba(0,0,0,0)', 'rgba(4,4,4,0.94)']);

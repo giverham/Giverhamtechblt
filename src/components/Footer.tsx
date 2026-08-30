@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Zap, Twitter, Instagram, Linkedin, Github, Mail, MessageCircle, ArrowUpRight } from 'lucide-react';
+import { Twitter, Instagram, Linkedin, Github, Mail, MessageCircle, ArrowUpRight } from 'lucide-react';
 
 const footerLinks = {
   Services: ['Website Development', 'Full Stack Development', 'AI Integration', 'E-Commerce', 'Banking Systems', 'SaaS Applications'],
@@ -38,9 +38,8 @@ export default function Footer() {
               whileHover={{ x: 2 }}
               transition={{ type: 'spring', stiffness: 400 }}
             >
-              <div className="w-9 h-9 rounded-xl flex items-center justify-center"
-                style={{ background: 'linear-gradient(135deg, #00E5FF, #00FFD1)' }}>
-                <Zap size={17} className="text-black" fill="currentColor" />
+              <div className="w-9 h-9 rounded-xl flex items-center justify-center overflow-hidden">
+                <img src="/logo.svg" alt="Giverham Tech Logo" className="w-full h-full object-contain" />
               </div>
               <div>
                 <span className="font-black text-white text-xl tracking-tight">GIVERHAM</span>
