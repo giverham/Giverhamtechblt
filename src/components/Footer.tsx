@@ -1,19 +1,43 @@
 import { motion } from 'framer-motion';
-import { Twitter, Instagram, Linkedin, Github, Mail, MessageCircle, ArrowUpRight } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Twitter, Instagram, Linkedin, Github, ArrowUpRight } from 'lucide-react';
 
 const footerLinks = {
   Services: ['Website Development', 'Full Stack Development', 'AI Integration', 'E-Commerce', 'Banking Systems', 'SaaS Applications'],
   Company:  ['About Us', 'Blog', 'Projects', 'Testimonials', 'Contact'],
 };
 
+const linkRouteMap: Record<string, { path: string; targetId: string }> = {
+  'About Us': { path: '/about', targetId: 'about' },
+  'Blog': { path: '/blog', targetId: 'blog' },
+  'Projects': { path: '/projects', targetId: 'projects' },
+  'Testimonials': { path: '/testimonials', targetId: 'testimonials' },
+  'Contact': { path: '/contact', targetId: 'contact' },
+  'Website Development': { path: '/services', targetId: 'services' },
+  'Full Stack Development': { path: '/services', targetId: 'services' },
+  'AI Integration': { path: '/services', targetId: 'services' },
+  'E-Commerce': { path: '/services', targetId: 'services' },
+  'Banking Systems': { path: '/services', targetId: 'services' },
+  'SaaS Applications': { path: '/services', targetId: 'services' },
+};
+
 const socials = [
-  { icon: Twitter,   href: '#', label: 'Twitter' },
-  { icon: Instagram, href: '#', label: 'Instagram' },
-  { icon: Linkedin,  href: '#', label: 'LinkedIn' },
-  { icon: Github,    href: '#', label: 'GitHub' },
+  { icon: Twitter,   href: 'https://twitter.com/giverhamtech', label: 'Twitter' },
+  { icon: Instagram, href: 'https://instagram.com/giverhamtech', label: 'Instagram' },
+  { icon: Linkedin,  href: 'https://linkedin.com/company/giverhamtech', label: 'LinkedIn' },
+  { icon: Github,    href: 'https://github.com/giverham', label: 'GitHub' },
 ];
 
 export default function Footer() {
+  const navigate = useNavigate();
+
+  const handleFooterClick = (e: React.MouseEvent, link: string) => {
+    e.preventDefault();
+    const route = linkRouteMap[link] || { path: '/services', targetId: 'services' };
+    navigate(route.path);
+    document.getElementById(route.targetId)?.scrollIntoView({ behavior: 'smooth' });
+  };
+
   return (
     <footer className="relative overflow-hidden">
       {/* Top border with gradient */}
@@ -34,6 +58,11 @@ export default function Footer() {
           <div className="col-span-2">
             <motion.a
               href="/"
+              onClick={(e) => {
+                e.preventDefault();
+                navigate('/');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
               className="flex items-center gap-2.5 mb-5 group"
               whileHover={{ x: 2 }}
               transition={{ type: 'spring', stiffness: 400 }}
@@ -56,7 +85,7 @@ export default function Footer() {
               {socials.map(s => {
                 const Icon = s.icon;
                 return (
-                  <a key={s.label} href={s.href} aria-label={s.label}
+                  <a key={s.label} href={s.href} aria-label={s.label} target="_blank" rel="noreferrer"
                     className="w-9 h-9 rounded-xl flex items-center justify-center text-gray-600 hover:text-cyan-400 transition-all duration-200 hover:scale-110 hover:-translate-y-0.5"
                     style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)' }}>
                     <Icon size={14} />
@@ -73,7 +102,9 @@ export default function Footer() {
               <ul className="space-y-3">
                 {links.map(link => (
                   <li key={link}>
-                    <a href="#"
+                    <a
+                      href={linkRouteMap[link]?.path || '/services'}
+                      onClick={(e) => handleFooterClick(e, link)}
                       className="text-gray-600 text-[13px] hover:text-gray-300 transition-colors duration-200 flex items-center gap-1 group">
                       {link}
                       <ArrowUpRight size={9} className="opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
@@ -92,9 +123,8 @@ export default function Footer() {
             © {new Date().getFullYear()} Giverham Tech. All rights reserved.
           </p>
           <div className="flex gap-5">
-            {['Privacy Policy', 'Terms of Service'].map(t => (
-              <a key={t} href="#" className="text-[12px] text-gray-400 hover:text-white transition-colors">{t}</a>
-            ))}
+            <a href="/privacy" className="text-[12px] text-gray-400 hover:text-white transition-colors">Privacy Policy</a>
+            <a href="/terms" className="text-[12px] text-gray-400 hover:text-white transition-colors">Terms of Service</a>
           </div>
           <p className="text-[12px] text-gray-400">
             Engineered by{' '}

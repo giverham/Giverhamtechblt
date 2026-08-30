@@ -1,4 +1,5 @@
 import { useEffect, useRef, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Canvas, useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { motion, useInView, AnimatePresence } from 'framer-motion';
@@ -292,6 +293,7 @@ function DataStreams() {
 
 /* ── Main Hero Section ────────────────────────── */
 export default function HeroSection() {
+  const navigate = useNavigate();
   const sectionRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(sectionRef, { margin: "100px 0px 100px 0px" });
 
@@ -397,7 +399,16 @@ export default function HeroSection() {
         transition={{ delay: 1.75, duration: 0.6 }}
         className="absolute bottom-6 sm:bottom-8 left-0 w-full flex justify-center cursor-pointer opacity-80 hover:opacity-100 transition-opacity z-20 pointer-events-auto"
       >
-        <a href="#services" aria-label="Scroll down to services" className="flex flex-col items-center gap-1 group">
+        <a
+          href="/services"
+          onClick={(e) => {
+            e.preventDefault();
+            navigate('/services');
+            document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' });
+          }}
+          aria-label="Scroll down to services"
+          className="flex flex-col items-center gap-1 group"
+        >
           <motion.div animate={{ y: [0, 5, 0] }} transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut' }}>
             <ChevronDown size={16} className="text-gray-400 group-hover:text-cyan-400 transition-colors" />
           </motion.div>

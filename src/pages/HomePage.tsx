@@ -1,4 +1,5 @@
-import { Suspense } from 'react';
+import { Suspense, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import AmbientBackground from '@/components/AmbientBackground';
 import Navbar from '@/components/Navbar';
@@ -13,7 +14,32 @@ import BlogSection from '@/components/sections/BlogSection';
 import ContactSection from '@/components/sections/ContactSection';
 import Footer from '@/components/Footer';
 
+const SECTION_IDS = ['services', 'projects', 'tech', 'about', 'testimonials', 'blog', 'contact'];
+
 export default function HomePage() {
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const hash = window.location.hash.replace('#', '');
+    if (hash && SECTION_IDS.includes(hash)) {
+      navigate(`/${hash}`, { replace: true });
+      return;
+    }
+
+    const route = location.pathname.replace(/^\//, '');
+    if (route && SECTION_IDS.includes(route)) {
+      const timer = window.setTimeout(() => {
+        document.getElementById(route)?.scrollIntoView({ behavior: 'smooth' });
+      }, 120);
+      return () => window.clearTimeout(timer);
+    }
+
+    if (!route) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [location.pathname, navigate]);
+
   return (
     <div className="relative min-h-screen bg-black overflow-x-hidden">
       <ErrorBoundary fallback={null}>

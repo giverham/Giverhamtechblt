@@ -1,21 +1,31 @@
 import { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import { Menu, X, Zap, ArrowRight } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 
 const navLinks = [
-  { label: 'Services',  href: '#services' },
-  { label: 'Projects',  href: '#projects' },
-  { label: 'Tech',      href: '#tech' },
-  { label: 'About',     href: '#about' },
-  { label: 'Blog',      href: '#blog' },
-  { label: 'Contact',   href: '#contact' },
+  { label: 'Services',  path: '/services', targetId: 'services' },
+  { label: 'Projects',  path: '/projects', targetId: 'projects' },
+  { label: 'Tech',      path: '/tech',     targetId: 'tech' },
+  { label: 'About',     path: '/about',    targetId: 'about' },
+  { label: 'Blog',      path: '/blog',     targetId: 'blog' },
+  { label: 'Contact',   path: '/contact',  targetId: 'contact' },
 ];
 
 export default function Navbar() {
   const [open, setOpen]         = useState(false);
   const [scrolled, setScrolled]   = useState(false);
   const [siteLogoUrl, setSiteLogoUrl] = useState<string | null>('/logo.svg');
+  const navigate                = useNavigate();
+  const location                = useLocation();
+
+  const handleNavClick = (e: React.MouseEvent, path: string, targetId: string) => {
+    e.preventDefault();
+    navigate(path);
+    document.getElementById(targetId)?.scrollIntoView({ behavior: 'smooth' });
+    setOpen(false);
+  };
 
   const { scrollY } = useScroll();
   const navBg = useTransform(scrollY, [0, 80], ['rgba(0,0,0,0)', 'rgba(4,4,4,0.94)']);
@@ -64,7 +74,16 @@ export default function Navbar() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 h-[56px] sm:h-[62px] flex items-center justify-between">
             
             {/* Compact Dynamic Brand Logo */}
-            <a href="/" className="flex items-center gap-2 group" aria-label="Giverham Tech Homepage">
+            <a
+              href="/"
+              onClick={(e) => {
+                e.preventDefault();
+                navigate('/');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              className="flex items-center gap-2 group"
+              aria-label="Giverham Tech Homepage"
+            >
               <motion.div
                 className="w-7 h-7 sm:w-9 sm:h-9 rounded-lg flex items-center justify-center overflow-hidden shrink-0"
                 style={!siteLogoUrl ? { background: 'linear-gradient(135deg, #00E5FF, #00FFD1)' } : {}}
@@ -86,26 +105,37 @@ export default function Navbar() {
 
             {/* Desktop nav — centered & evenly spaced */}
             <nav className="hidden md:flex items-center justify-center space-x-2 lg:space-x-4">
-              {navLinks.map((link, i) => (
-                <motion.a
-                  key={link.label}
-                  href={link.href}
-                  initial={{ opacity: 0, y: -12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1 + i * 0.06, duration: 0.5 }}
-                  className="relative px-4 lg:px-5 py-2 text-[13px] text-gray-300 hover:text-white transition-colors duration-200 group font-medium"
-                >
-                  {link.label}
-                  <span className="absolute bottom-1 left-4 right-4 h-px scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-300"
-                    style={{ background: 'linear-gradient(90deg, #00E5FF, #00FFD1)' }} />
-                </motion.a>
-              ))}
+              {navLinks.map((link, i) => {
+                const isActive = location.pathname === link.path;
+                return (
+                  <motion.a
+                    key={link.label}
+                    href={link.path}
+                    onClick={(e) => handleNavClick(e, link.path, link.targetId)}
+                    initial={{ opacity: 0, y: -12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1 + i * 0.06, duration: 0.5 }}
+                    className={`relative px-4 lg:px-5 py-2 text-[13px] transition-colors duration-200 group font-medium ${
+                      isActive ? 'text-cyan-400' : 'text-gray-300 hover:text-white'
+                    }`}
+                  >
+                    {link.label}
+                    <span
+                      className={`absolute bottom-1 left-4 right-4 h-px origin-left transition-transform duration-300 ${
+                        isActive ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
+                      }`}
+                      style={{ background: 'linear-gradient(90deg, #00E5FF, #00FFD1)' }}
+                    />
+                  </motion.a>
+                );
+              })}
             </nav>
 
             {/* CTA + hamburger */}
             <div className="flex items-center gap-3">
               <motion.a
-                href="#contact"
+                href="/contact"
+                onClick={(e) => handleNavClick(e, '/contact', 'contact')}
                 className="hidden sm:flex bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 hover:bg-cyan-400 hover:text-black text-xs px-4 py-2 rounded-full font-semibold transition-all items-center gap-1.5 group"
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -154,8 +184,8 @@ export default function Navbar() {
               {navLinks.map((link, i) => (
                 <motion.a
                   key={link.label}
-                  href={link.href}
-                  onClick={() => setOpen(false)}
+                  href={link.path}
+                  onClick={(e) => handleNavClick(e, link.path, link.targetId)}
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: i * 0.05 }}
@@ -165,7 +195,7 @@ export default function Navbar() {
                   {link.label}
                 </motion.a>
               ))}
-              <a href="#contact" onClick={() => setOpen(false)} className="btn-primary mt-3 justify-center">
+              <a href="/contact" onClick={(e) => handleNavClick(e, '/contact', 'contact')} className="btn-primary mt-3 justify-center">
                 Start a Project
               </a>
             </nav>
