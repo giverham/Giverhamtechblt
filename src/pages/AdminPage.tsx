@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   LayoutDashboard, FolderOpen, Wrench, Quote, FileText,
   MessageSquare, Image, Settings, LogOut, Menu, X, Zap,
-  ChevronRight, Users, BarChart3, Globe, Search
+  ChevronRight, User, Globe
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 
@@ -17,9 +17,11 @@ import AdminBlog from '@/components/admin/AdminBlog';
 import AdminMessages from '@/components/admin/AdminMessages';
 import AdminMedia from '@/components/admin/AdminMedia';
 import AdminSettings from '@/components/admin/AdminSettings';
+import AdminFounder from '@/components/admin/AdminFounder';
 
 const navItems = [
   { icon: LayoutDashboard, label: 'Dashboard', path: '' },
+  { icon: User, label: 'Founder', path: 'founder' },
   { icon: FolderOpen, label: 'Projects', path: 'projects' },
   { icon: Wrench, label: 'Services', path: 'services' },
   { icon: Quote, label: 'Testimonials', path: 'testimonials' },
@@ -154,6 +156,7 @@ export default function AdminPage() {
         <main className="flex-1 p-6">
           <Routes>
             <Route path="/" element={<AdminDashboard />} />
+            <Route path="/founder" element={<AdminFounder />} />
             <Route path="/projects" element={<AdminProjects />} />
             <Route path="/services" element={<AdminServices />} />
             <Route path="/testimonials" element={<AdminTestimonials />} />

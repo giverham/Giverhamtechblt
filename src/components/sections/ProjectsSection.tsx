@@ -38,23 +38,33 @@ export default function ProjectsSection() {
   const [active, setActive] = useState(0);
 
   useEffect(() => {
-    supabase.from('projects').select('*').eq('published', true).order('sort_order').then(({ data }) => {
-      if (data && data.length > 0) {
-        setProjects(data.map(p => ({
-          ...p,
-          subtitle: p.subtitle || fallbackProjects.find(fb => fb.title === p.title)?.subtitle || 'Digital Enterprise Platform'
-        })));
-      }
-    });
+    const load = () => {
+      supabase.from('projects').select('*').eq('published', true).order('sort_order').then(({ data }) => {
+        if (data && data.length > 0) {
+          setProjects(data.map(p => ({
+            ...p,
+            subtitle: p.subtitle || fallbackProjects.find(fb => fb.title === p.title)?.subtitle || 'Digital Enterprise Platform'
+          })));
+        }
+      });
+    };
+
+    load();
+    const channel = supabase
+      .channel('projects-live')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'projects' }, () => { load(); })
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
   }, []);
 
-  const CATEGORIES = ['All', 'Real Estate', 'E-Commerce', 'AI Platforms'];
+  const CATEGORIES = ['All', 'Banking', 'Real Estate', 'E-Commerce', 'AI Platforms'];
 
   const filteredProjects = projects.filter(p => {
     if (selectedCategory === 'All') return true;
+    if (selectedCategory === 'Banking') return p.category === 'Banking';
     if (selectedCategory === 'Real Estate') return p.category === 'Real Estate';
     if (selectedCategory === 'E-Commerce') return p.category === 'E-Commerce';
-    if (selectedCategory === 'AI Platforms') return p.category.includes('AI') || p.category === 'AI / ML';
+    if (selectedCategory === 'AI Platforms') return p.category.includes('AI') || p.category === 'AI / ML' || p.category === 'AI/ML';
     return p.category === selectedCategory;
   });
 

@@ -1,11 +1,19 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { motion, useInView, useScroll, useTransform } from 'framer-motion';
+import { supabase } from '@/lib/supabase';
 
 const roles = [
   { label: 'Giverham Tech', color: '#00E5FF' },
   { label: 'Giver Recording Studio', color: '#00FFD1' },
   { label: 'Giver Store NG', color: '#3B82F6' },
 ];
+
+const FALLBACK = {
+  founder_name: 'Adelaja Hassan M.',
+  founder_title: 'Full Stack Developer & AI Engineer',
+  founder_bio: 'I build premium digital products, AI-powered platforms, banking systems, e-commerce solutions, media platforms, and scalable business software designed for performance, reliability, and growth.',
+  founder_photo_url: '',
+};
 
 export default function FounderSection() {
   const sectionRef = useRef<HTMLDivElement>(null);
@@ -14,7 +22,31 @@ export default function FounderSection() {
   const inView = useInView(sectionRef, { once: true, amount: 0.15 });
 
   const [imgError, setImgError] = useState(false);
-  const founderPhotoUrl = ""; 
+  const [founder, setFounder] = useState(FALLBACK);
+
+  useEffect(() => {
+    const load = async () => {
+      const { data } = await supabase.from('website_settings').select('key,value').in('key', Object.keys(FALLBACK));
+      if (!data?.length) return;
+      const next = { ...FALLBACK };
+      data.forEach((row: { key: string; value: string }) => {
+        if (row.key in next && row.value) {
+          (next as Record<string, string>)[row.key] = row.value;
+        }
+      });
+      setFounder(next);
+      setImgError(false);
+    };
+
+    load();
+    const channel = supabase
+      .channel('founder-settings-live')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'website_settings' }, () => { load(); })
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, []);
+
+  const founderPhotoUrl = founder.founder_photo_url; 
 
   return (
     <section ref={sectionRef} id="about" className="relative py-6 sm:py-10 md:py-14 overflow-hidden">
@@ -62,7 +94,7 @@ export default function FounderSection() {
               {founderPhotoUrl && !imgError ? (
                 <img
                   src={founderPhotoUrl}
-                  alt="Adelaja Hassan M."
+                  alt={founder.founder_name}
                   onError={() => setImgError(true)}
                   className="w-full h-full object-cover object-top"
                 />
@@ -70,7 +102,9 @@ export default function FounderSection() {
                 <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-b from-cyan-950/40 via-black/60 to-black/90 relative p-1 text-center">
                   <div className="absolute inset-0 bg-grid opacity-20 pointer-events-none" />
                   <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-cyan-950/70 border border-cyan-400/40 flex items-center justify-center mb-1 shadow-[0_0_12px_rgba(0,229,255,0.2)]">
-                    <span className="text-xs sm:text-sm font-black font-mono text-cyan-300">AH</span>
+                    <span className="text-xs sm:text-sm font-black font-mono text-cyan-300">
+                      {founder.founder_name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
+                    </span>
                   </div>
                   <span className="text-[7px] sm:text-[8px] font-mono text-cyan-400/90 uppercase tracking-wider flex items-center gap-1">
                     <span className="w-1 h-1 rounded-full bg-cyan-400 animate-pulse" />
@@ -84,17 +118,17 @@ export default function FounderSection() {
             <div className="flex-1 text-left space-y-2 sm:space-y-3 pt-0.5">
               <div>
                 <h3 className="text-sm sm:text-2xl font-bold text-white tracking-tight leading-tight">
-                  Adelaja Hassan M.
+                  {founder.founder_name}
                 </h3>
                 <p className="text-[9px] sm:text-xs font-mono font-semibold text-cyan-400 uppercase tracking-wider mt-0.5 sm:mt-1 flex items-center gap-1.5">
                   <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
-                  Full Stack Developer & AI Engineer
+                  {founder.founder_title}
                 </p>
               </div>
 
               {/* Bio Quote */}
               <p className="text-slate-200 text-[11px] sm:text-sm leading-relaxed font-normal italic border-l-2 border-cyan-400/50 pl-2.5 sm:pl-3 py-0.5">
-                "I build premium digital products, AI-powered platforms, banking systems, e-commerce solutions, media platforms, and scalable business software designed for performance, reliability, and growth."
+                "{founder.founder_bio.replace(/^"|"$/g, '')}"
               </p>
             </div>
 

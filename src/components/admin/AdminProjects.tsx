@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Pencil, Trash2, X, Check, Loader2, AlertTriangle } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import ImageUpload from './ImageUpload';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -9,6 +10,7 @@ interface Project {
   id: string;
   title: string;
   slug: string;
+  subtitle?: string;
   description: string;
   features: string[];
   tech_stack: string[];
@@ -26,6 +28,7 @@ type ProjectForm = Omit<Project, 'id'> & { id?: string };
 const EMPTY_FORM: ProjectForm = {
   title: '',
   slug: '',
+  subtitle: '',
   description: '',
   features: [],
   tech_stack: [],
@@ -180,14 +183,21 @@ export default function AdminProjects() {
       tech_stack: techInput.split(',').map((s) => s.trim()).filter(Boolean),
     };
 
-    let error;
-    if (form.id) {
-      const { id, ...rest } = payload;
-      ({ error } = await supabase.from('projects').update(rest).eq('id', id));
-    } else {
-      const { id, ...rest } = payload;
-      void id;
-      ({ error } = await supabase.from('projects').insert(rest));
+    const save = async (body: Record<string, unknown>) => {
+      if (form.id) {
+        return supabase.from('projects').update(body).eq('id', form.id);
+      }
+      return supabase.from('projects').insert(body);
+    };
+
+    const { id, ...rest } = payload;
+    void id;
+    let { error } = await save(rest);
+
+    if (error && /subtitle/i.test(error.message)) {
+      const { subtitle: _omit, ...withoutSubtitle } = rest;
+      void _omit;
+      ({ error } = await save(withoutSubtitle));
     }
 
     if (error) {
@@ -340,6 +350,16 @@ export default function AdminProjects() {
           </div>
 
           <div>
+            <label className={labelCls}>Subtitle</label>
+            <input
+              className={inputCls}
+              value={form.subtitle ?? ''}
+              onChange={(e) => setForm((f) => ({ ...f, subtitle: e.target.value }))}
+              placeholder="Digital Banking Infrastructure"
+            />
+          </div>
+
+          <div>
             <label className={labelCls}>Description</label>
             <textarea
               className={`${inputCls} resize-none h-24`}
@@ -390,13 +410,11 @@ export default function AdminProjects() {
                 onChange={(e) => setForm((f) => ({ ...f, sort_order: Number(e.target.value) }))}
               />
             </div>
-            <div>
-              <label className={labelCls}>Image URL</label>
-              <input
-                className={inputCls}
+            <div className="sm:col-span-3">
+              <ImageUpload
+                label="Project Image"
                 value={form.image_url}
-                onChange={(e) => setForm((f) => ({ ...f, image_url: e.target.value }))}
-                placeholder="https://..."
+                onChange={(url) => setForm((f) => ({ ...f, image_url: url }))}
               />
             </div>
           </div>
