@@ -188,8 +188,8 @@ export default function TechStackSection() {
           </motion.p>
         </div>
 
-        {/* 3-Column Orbital Section Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-8 lg:gap-12 items-center max-w-7xl mx-auto my-6">
+        {/* 3-Column Orbital Section Layout — orbit hidden on mobile */}
+        <div className="hidden sm:grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-8 lg:gap-12 items-center max-w-7xl mx-auto my-6">
 
           {/* LEFT COLUMN: System Status & Telemetry Glass Card (Hidden on mobile) */}
           <motion.div

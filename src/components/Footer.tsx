@@ -56,6 +56,7 @@ export default function Footer() {
 
           {/* Brand */}
           <div className="col-span-2">
+            <div className="-translate-y-8 sm:translate-y-0">
             <motion.a
               href="/"
               onClick={(e) => {
@@ -80,6 +81,8 @@ export default function Footer() {
               We engineer digital experiences that transform businesses.
               Premium websites, AI platforms, and custom software for the modern world.
             </p>
+            </div>
+            <div className="h-8 sm:hidden" aria-hidden />
 
             <div className="flex gap-2.5">
               {socials.map(s => {

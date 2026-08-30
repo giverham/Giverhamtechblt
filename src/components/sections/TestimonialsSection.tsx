@@ -71,12 +71,12 @@ export default function TestimonialsSection() {
         </div>
 
         {/* Testimonial Card Container */}
-        <div className="relative max-w-3xl mx-auto min-h-[200px]">
-          {/* Subtle background stack cards */}
+        <div className="relative max-w-3xl mx-auto min-h-0 sm:min-h-[200px]">
+          {/* Subtle background stack cards — desktop only */}
           {[-1, 1].map(offset => {
             const idx = (active + offset + testimonials.length) % testimonials.length;
             return (
-              <div key={idx} className="absolute inset-x-4 sm:inset-x-6 top-3 bottom-0 rounded-2xl"
+              <div key={idx} className="hidden sm:block absolute inset-x-6 top-3 bottom-0 rounded-2xl"
                 style={{
                   background: 'rgba(255,255,255,0.015)',
                   border: '1px solid rgba(255,255,255,0.04)',
