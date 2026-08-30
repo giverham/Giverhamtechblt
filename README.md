@@ -1,6 +1,6 @@
 # Giverham Tech
 
-The official Giverham Tech studio site — custom software, AI-assisted products, and client work.
+The official Giverham Tech studio site — custom software, digital products, and client work.
 
 **Live site:** [giverham.com](https://giverham.com)
 
